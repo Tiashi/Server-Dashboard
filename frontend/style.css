@@ -41,7 +41,14 @@ button { cursor: pointer; font-family: var(--font-mono); }
 input  { font-family: var(--font-mono); }
 
 /* ── Layout ────────────────────────────────────────────────── */
-body { display: flex; }
+body { display: flex; flex-direction: column; }
+
+#app-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: 100vh;
+}
 
 #sidebar {
   width: var(--sidebar-w);
@@ -56,7 +63,7 @@ body { display: flex; }
   z-index: 50;
 }
 
-#content { flex: 1; overflow-y: auto; height: 100vh; padding: var(--space-lg); transition: margin-left .25s ease; min-width: 0; }
+#content { flex: 1; overflow-y: auto; height: 100%; padding: var(--space-lg); transition: margin-left .25s ease; min-width: 0; }
 
 /* ── Top bar (mobile) ──────────────────────────────────────── */
 #top-bar {
@@ -130,10 +137,12 @@ body { display: flex; }
 @media (max-width: 800px) {
   
   #top-bar { display: flex; }
-
+  #app-wrapper {
+    margin-top: 52px;
+    height: calc(100vh - 52px);
+  }
   #content {
     padding: 20px 16px;
-    padding-top: 72px; /* 52px top-bar + 20px respiro */
   }
 
   #sidebar {
@@ -142,8 +151,10 @@ body { display: flex; }
     left: 0;
     width: 100vw;
     min-height: 100dvh;
+    padding-top: 52px;
     transform: translateX(-100%);
     border-right: none;
+    z-index: 250;
   }
   #sidebar.open {
     transform: translateX(0);

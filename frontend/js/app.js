@@ -4,7 +4,6 @@ const pages = {
   docker:    { load: loadDocker      },
   tailscale: { load: loadTailscale   },
   resources: { load: loadResources, unload: unloadResources },
-  terminal:  { load: loadTerminal,  unload: unloadTerminal  },
 };
 
 let currentPage = null;
