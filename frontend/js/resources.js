@@ -168,8 +168,8 @@ async function loadResources() {
         if (_prevNet && interval > 0) {
           const prev = _prevNet.ifaces[n.iface];
           if (prev) {
-            rxRate = fmtBytes((n.bytes_recv - prev.bytes_recv) / interval) + '/s';
-            txRate = fmtBytes((n.bytes_sent - prev.bytes_sent) / interval) + '/s';
+            rxRate = fmtBytes(((n.bytes_recv - prev.bytes_recv) / interval).toFixed(1)) + '/s';
+            txRate = fmtBytes(((n.bytes_sent - prev.bytes_sent) / interval).toFixed(1)) + '/s';
           }
         }
         return `

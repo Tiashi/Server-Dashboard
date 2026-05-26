@@ -1,8 +1,14 @@
 [
   {
-    "id": "5c018dc4-144c-428d-907c-6859d05c43d2",
-    "name": "navidrome",
+    "id": "3856d172-0e9c-4b16-b201-01d4b1b11805",
+    "name": "Navidrome",
     "url": "http://navidrome.home",
-    "icon": "\ud83d\udd17"
+    "icon": "\ud83c\udfb5"
+  },
+  {
+    "id": "6c0f5dde-9593-44f0-be24-88342580fd07",
+    "name": "AdGuard",
+    "url": "http://adguard.home:5000",
+    "icon": "\ud83d\udee1\ufe0f"
   }
 ]

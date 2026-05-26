@@ -2,7 +2,7 @@
 const pages = {
   shortcuts: { load: loadShortcuts   },
   docker:    { load: loadDocker      },
-  tailscale: { load: loadTailscale   },
+  tailscale: { load: loadTailscale, unload: unloadTailscale },
   resources: { load: loadResources, unload: unloadResources },
 };
 
@@ -43,9 +43,10 @@ async function api(method, path, body) {
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
-const GET    = path        => api('GET',    path);
-const POST   = (path, b)  => api('POST',   path, b);
-const DELETE = path        => api('DELETE', path);
+const GET = path => api('GET', path);
+const POST = (path, b) => api('POST', path, b);
+const PATCH = (path, b) => api('PATCH', path, b);
+const DELETE = path => api('DELETE', path);
 
 // ── Clock ───────────────────────────────────────────────────────────────────
 function updateClock() {
