@@ -99,7 +99,10 @@ async def list_nodes():
 @router.post("/nodes/register")
 async def register_node(body: RegisterNode):
     try:
-        data = await _post(f"/node/register?user={body.user}&key={body.key}")
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.post(f"{_base_url()}/api/v1/node/register", params={"user": body.user, "key": body.key}, headers=_headers())
+        r.raise_for_status()
+        data = r.json()
         return {"ok": True, "node": _fmt_node(data.get("node", {}))}
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -185,10 +188,8 @@ async def session_status():
     if not key:
         return {"has_key": False, "valid": False, "prefix": None, "url": url}
     try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            r = await client.get(f"{url}/api/v1/node", headers={"Authorization": f"Bearer {key}"})
-            valid = r.status_code == 200
-            return {"has_key": True, "valid": valid, "prefix": key[:7] + "...", "url": url}
+        await _get("/node")
+        return {"has_key": True, "valid": True, "prefix": key[:7] + "...", "url": url}
     except Exception:
         return {"has_key": True, "valid": False, "prefix": key[:7] + "...", "url": url}
 
@@ -198,15 +199,8 @@ async def update_config(body: SetConfig):
         if body.url is not None:
             cfg_module.update_headscale_url(body.url.rstrip('/'))
         if body.key is not None:
-            # verifica prima
-            async with httpx.AsyncClient(timeout=10) as client:
-                r = await client.get(f"{_base_url()}/api/v1/node", headers={"Authorization": f"Bearer {body.key}"})
-                if r.status_code != 200:
-                    raise HTTPException(401, "Chiave non valida")
             cfg_module.update_api_key(body.key)
         return {"ok": True}
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(500, str(e))
 

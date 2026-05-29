@@ -389,7 +389,7 @@ async function _populateRegUserSelect() {
   try {
     const users = await GET('/tailscale/users');
     const sel = document.getElementById('reg-user');
-    if (sel) sel.innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    if (sel) sel.innerHTML = users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
   } catch(e) {}
 }
 
