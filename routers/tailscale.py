@@ -115,15 +115,7 @@ async def rename_node(node_id: str, body: RenameNode):
 @router.post("/nodes/{node_id}/move")
 async def move_node(node_id: str, body: MoveNode):
     try:
-        await _post(f"/node/{node_id}/user?user={body.user}")
-        return {"ok": True}
-    except Exception as e:
-        raise HTTPException(500, str(e))
-
-@router.post("/nodes/{node_id}/expire")
-async def expire_node(node_id: str):
-    try:
-        await _post(f"/node/{node_id}/expire")
+        await _post(f"/node/{node_id}/user", {"user": body.user})
         return {"ok": True}
     except Exception as e:
         raise HTTPException(500, str(e))

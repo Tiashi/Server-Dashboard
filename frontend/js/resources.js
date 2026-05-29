@@ -214,5 +214,4 @@ function unloadResources() {
     _resourcesInterval = null;
   }
   _prevNet = null;
-  fetch('/api/resources/stop', { method: 'POST' }).catch(() => {});
 }

@@ -450,7 +450,7 @@ async function _loadNodes() {
         </div>
         <div class="node-card-actions">
           <button class="btn" data-action="rename" data-id="${n.id}" data-name="${n.given_name || n.name}">✏ Rinomina</button>
-          <button class="btn" data-action="move" data-id="${n.id}" data-user="${n.user}">⇄ Sposta</button>
+          <button class="btn" data-action="move" data-id="${n.id}" data-user="${n.user}">⇄ Trasferisci</button>
           <button class="btn btn-red" data-action="delete-node" data-id="${n.id}" data-name="${n.given_name || n.name}">✕ Elimina</button>
         </div>
       </div>
@@ -473,10 +473,15 @@ async function _loadNodes() {
     }
 
     if (action === 'move') {
-      const newUser = await dlgPrompt('Sposta nodo', `Utente destinazione (attuale: "${user}"):`, user);
-      if (!newUser || newUser === user) return;
+      let users = [];
+      try { users = await GET('/tailscale/users'); } catch(e) {}
+      const userOptions = users.map(u => ({ value: u.id, label: u.name }));
+      if (!userOptions.length) { alert('Nessun utente disponibile'); return; }
+      const currentUser = users.find(u => u.name === user);
+      const newUserId = await dlgSelect('Trasferisci nodo', `Trasferisci ad utente (attuale: "${user}"):`, userOptions, currentUser?.id ?? '');
+      if (!newUserId || newUserId === currentUser?.id) return;
       try {
-        await POST(`/tailscale/nodes/${id}/move`, { user: sanitize(newUser) });
+        await POST(`/tailscale/nodes/${id}/move`, { user: newUserId });
         body.removeEventListener('click', handleClick);
         _loadNodes();
       } catch(err) { alert(`Errore: ${err.message}`); }

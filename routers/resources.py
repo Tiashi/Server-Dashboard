@@ -109,13 +109,3 @@ def get_resources():
         "network": network,
         "timestamp": datetime.now().isoformat(),
     }
-
-# Questi endpoint restano per compatibilità ma non fanno nulla —
-# psutil non ha un processo da avviare/fermare
-@router.post("/start")
-def start_resources():
-    return {"ok": True}
-
-@router.post("/stop")
-def stop_resources():
-    return {"ok": True}
