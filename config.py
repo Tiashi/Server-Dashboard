@@ -2,7 +2,7 @@ import tomllib, re
 from pathlib import Path
 
 def get_path() -> Path:
-    return Path("/config/config.toml")
+    return Path("./config/config.toml")
 
 def load() -> dict:
     with open(get_path(), "rb") as f:
@@ -32,4 +32,3 @@ HEADSCALE_APIKEY = cfg["headscale"]["api_key"]
 GLANCES_PORT     = cfg["glances"]["port"]
 SERVER_HOST      = cfg["server"]["host"]
 SERVER_PORT      = cfg["server"]["port"]
-DOCKER_HOST      = cfg["docker"]["host"]
