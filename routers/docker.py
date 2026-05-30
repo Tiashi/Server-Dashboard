@@ -52,3 +52,37 @@ def get_logs(container_id: str, tail: int = 100):
         return {"logs": logs}
     except Exception as e:
         raise HTTPException(500, str(e))
+
+
+
+@router.get("/images")
+def list_images():
+    images = _client().images.list()
+    result = []
+    for img in images:
+        tags = img.tags or [img.short_id]
+        result.append({
+            "id":      img.short_id,
+            "tags":    tags,
+            "size":    img.attrs.get("Size", 0),
+            "created": img.attrs.get("Created", ""),
+        })
+    return result
+
+@router.get("/networks")
+def list_networks():
+    result = []
+    for net in _client().networks.list():
+        containers = [
+            {"name": c.get("Name", ""), "ipv4": c.get("IPv4Address", "—")}
+            for c in (net.attrs.get("Containers") or {}).values()
+        ]
+        ipam = net.attrs.get("IPAM", {}).get("Config") or [{}]
+        result.append({
+            "id":         net.id[:12],
+            "name":       net.name,
+            "driver":     net.attrs.get("Driver", ""),
+            "subnet":     ipam[0].get("Subnet", "—"),
+            "containers": containers,
+        })
+    return result

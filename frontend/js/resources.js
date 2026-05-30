@@ -104,7 +104,7 @@ async function loadResources() {
       document.getElementById('rs-swap').textContent =
         `${fmtBytes(data.swap.used)} / ${fmtBytes(data.swap.total)}`;
     } else {
-      document.getElementById('rv-swap').innerHTML = `—<span></span>`;
+      document.getElementById('rv-swap').innerHTML = `——<span></span>`;
       document.getElementById('rm-swap').style.width = '0%';
       document.getElementById('rs-swap').textContent = 'Non disponibile';
     }
@@ -216,4 +216,5 @@ function unloadResources() {
     _resourcesInterval = null;
   }
   _prevNet = null;
+  return {"ok": True}
 }
