@@ -216,5 +216,5 @@ function unloadResources() {
     _resourcesInterval = null;
   }
   _prevNet = null;
-  return {"ok": True}
+  fetch('/api/resources/stop', { method: 'POST' }).catch(() => {});
 }
