@@ -89,6 +89,7 @@ def prune_images():
 def list_networks():
     result = []
     for net in _client().networks.list():
+        net.reload()
         containers = [
             {"name": c.get("Name", ""), "ipv4": c.get("IPv4Address", "—")}
             for c in (net.attrs.get("Containers") or {}).values()
