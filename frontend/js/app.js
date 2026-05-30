@@ -74,6 +74,11 @@ function meterClass(pct) {
   return '';
 }
 
+// ── Stop resources on browser close ────────────────────────────────
+window.addEventListener('beforeunload', () => {
+  if (currentPage === 'resources') fetch('/api/resources/stop', { method: 'POST', keepalive: true });
+});
+
 // ── Sidebar mobile toggle ────────────────────────────────────
 const sidebar  = document.getElementById('sidebar');
 const overlay  = document.getElementById('sidebar-overlay');

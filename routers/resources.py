@@ -110,6 +110,6 @@ def get_resources():
         "timestamp": datetime.now().isoformat(),
     }
 
-@router.post("/stop")
-def stop_resources():
-    return {"ok": True}
+# @router.post("/stop")
+# def stop_resources():
+#     return {"ok": True}
