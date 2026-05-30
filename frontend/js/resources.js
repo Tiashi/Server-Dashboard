@@ -1,8 +1,17 @@
 let _resourcesInterval = null;
-let _prevNet = null;  // per calcolare il delta bytes/sec
+let _prevNet = null;
+let _currentSession = null;
 
 async function loadResources() {
+
+  if (_resourcesInterval) {
+    clearInterval(_resourcesInterval);
+    _resourcesInterval = null;
+  }
+  const sessionToken = Symbol();
+  _currentSession = sessionToken;
   const el = document.getElementById('page-resources');
+
   el.innerHTML = `
     <div class="page-title">Risorse</div>
     <div class="page-subtitle">MONITOR DI SISTEMA — LIVE</div>
@@ -70,8 +79,10 @@ async function loadResources() {
   _prevNet = null;
 
   async function poll() {
+    if (_currentSession !== sessionToken) return;
     let data;
     try { data = await GET('/resources'); } catch { return; }
+    if (_currentSession !== sessionToken) return;
 
     const now = Date.now();
 
@@ -215,6 +226,6 @@ function unloadResources() {
     clearInterval(_resourcesInterval);
     _resourcesInterval = null;
   }
+  _currentSession = null;
   _prevNet = null;
-  fetch('/api/resources/stop', { method: 'POST' }).catch(() => {});
 }

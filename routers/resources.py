@@ -109,7 +109,3 @@ def get_resources():
         "network": network,
         "timestamp": datetime.now().isoformat(),
     }
-
-@router.post("/stop")
-def stop_resources():
-    return {"ok": True}
