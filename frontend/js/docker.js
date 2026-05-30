@@ -103,11 +103,11 @@ async function renderContainers() {
       <td><span class="badge ${running ? 'badge-green' : 'badge-red'}">${c.status}</span></td>
       <td style="color:var(--text-dim);font-size:11px">${c.ports || '—'}</td>
       <td>
-        <div class="action-row">
-          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}" style="width:80px">📄 Log</button>
+        <div class="action-row" style="justify-content:flex-end">
+          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}" style="width:100px;padding:7px 12px">📄 Log</button>
           ${running
-            ? `<button class="btn btn-red" data-action="stop" data-id="${c.id}" style="width:80px">■ Stop</button>`
-            : `<button class="btn btn-green" data-action="start" data-id="${c.id}" style="width:80px">▶ Start</button>`
+            ? `<button class="btn btn-red" data-action="stop" data-id="${c.id}" style="width:100px">■ Stop</button>`
+            : `<button class="btn btn-green" data-action="start" data-id="${c.id}" style="width:100px">▶ Start</button>`
           }
         </div>
       </td>
