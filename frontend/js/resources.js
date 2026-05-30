@@ -5,7 +5,7 @@ let _currentSession = null;
 async function loadResources() {
 
   if (_resourcesInterval) {
-    clearInterval(_resourcesInterval);
+    clearTimeout(_resourcesInterval);
     _resourcesInterval = null;
   }
   const sessionToken = Symbol();
@@ -217,13 +217,18 @@ async function loadResources() {
     }
   }
 
-  poll();
-  _resourcesInterval = setInterval(poll, 2000);
+  async function scheduledPoll() {
+    await poll();
+    if (_currentSession !== sessionToken) return;
+    _resourcesInterval = setTimeout(scheduledPoll, 2000);
+  }
+
+  scheduledPoll();
 }
 
 function unloadResources() {
   if (_resourcesInterval) {
-    clearInterval(_resourcesInterval);
+    clearTimeout(_resourcesInterval);
     _resourcesInterval = null;
   }
   _currentSession = null;
