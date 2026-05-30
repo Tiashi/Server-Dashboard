@@ -22,9 +22,9 @@ async def _get(path: str):
         r.raise_for_status()
         return r.json()
 
-async def _post(path: str, body: dict = {}):
+async def _post(path: str, body: dict = {}, params: dict = {}):
     async with httpx.AsyncClient(timeout=10) as client:
-        r = await client.post(f"{_base_url()}/api/v1{path}", headers=_headers(), json=body)
+        r = await client.post(f"{_base_url()}/api/v1{path}", headers=_headers(), json=body, params=params)
         r.raise_for_status()
         return r.json()
 
@@ -99,10 +99,7 @@ async def list_nodes():
 @router.post("/nodes/register")
 async def register_node(body: RegisterNode):
     try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            r = await client.post(f"{_base_url()}/api/v1/node/register", params={"user": body.user, "key": body.key}, headers=_headers())
-        r.raise_for_status()
-        data = r.json()
+        data = await _post("/node/register", params={"user": body.user, "key": body.key})
         return {"ok": True, "node": _fmt_node(data.get("node", {}))}
     except Exception as e:
         raise HTTPException(500, str(e))
