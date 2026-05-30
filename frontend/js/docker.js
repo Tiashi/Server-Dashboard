@@ -104,11 +104,11 @@ async function renderContainers() {
       <td style="color:var(--text-dim);font-size:11px">${c.ports || '—'}</td>
       <td>
         <div class="action-row">
+          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}" style="width:80px">📄 Log</button>
           ${running
-            ? `<button class="btn btn-red" data-action="stop" data-id="${c.id}">■ Stop</button>`
-            : `<button class="btn btn-green" data-action="start" data-id="${c.id}">▶ Start</button>`
+            ? `<button class="btn btn-red" data-action="stop" data-id="${c.id}" style="width:80px">■ Stop</button>`
+            : `<button class="btn btn-green" data-action="start" data-id="${c.id}" style="width:80px">▶ Start</button>`
           }
-          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}">📄 Log</button>
         </div>
       </td>
     `;
@@ -122,7 +122,7 @@ async function renderContainers() {
 
     if (action === 'start' || action === 'stop') {
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>';
+      btn.innerHTML = '<span class="spinner" style="width:10px;height:10px;border-width:1.5px"></span>';
       try {
         await POST(`/docker/${id}/${action}`);
         await renderContainers();
