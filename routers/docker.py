@@ -24,6 +24,9 @@ def _fmt(c) -> dict:
         "ports":  ", ".join(ports),
     }
 
+
+
+
 @router.get("")
 def list_containers():
     return [_fmt(c) for c in _client().containers.list(all=True)]
@@ -55,6 +58,8 @@ def get_logs(container_id: str, tail: int = 100):
 
 
 
+
+
 @router.get("/images")
 def list_images():
     images = _client().images.list()
@@ -68,6 +73,17 @@ def list_images():
             "created": img.attrs.get("Created", ""),
         })
     return result
+
+@router.post("/images/prune")
+def prune_images():
+    result = _client().images.prune(filters={"dangling": True})
+    reclaimed = result.get("SpaceReclaimed", 0)
+    return {"ok": True, "reclaimed": reclaimed}
+
+
+
+
+
 
 @router.get("/networks")
 def list_networks():

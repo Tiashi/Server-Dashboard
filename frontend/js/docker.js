@@ -24,7 +24,10 @@ async function loadDocker() {
       <div class="panel" style="margin-top:16px">
         <div class="panel-header">
           <span>Immagini</span>
-          <button class="btn" id="images-refresh">↻ Aggiorna</button>
+          <div class="action-row">
+            <button class="btn btn-red" id="images-prune">🗑 Prune</button>
+            <button class="btn" id="images-refresh">↻ Aggiorna</button>
+          </div>
         </div>
         <div id="images-body"><div class="empty-state"><div class="spinner"></div></div></div>
       </div>
@@ -53,6 +56,17 @@ async function loadDocker() {
   document.getElementById('docker-refresh').addEventListener('click', renderContainers);
   document.getElementById('images-refresh').addEventListener('click', renderImages);
   document.getElementById('networks-refresh').addEventListener('click', renderNetworks);
+
+  document.getElementById('images-prune').addEventListener('click', async () => {
+    if (!await dlgConfirm('Rimuovere tutte le immagini dangling (senza tag)? L\'operazione è irreversibile.')) return;
+    try {
+      const result = await POST('/docker/images/prune');
+      await renderImages();
+      alert(`Pulizia completata. Spazio liberato: ${fmtBytes(result.reclaimed)}`);
+    } catch (err) {
+      alert(`Errore: ${err.message}`);
+    }
+  });
 
   renderContainers();
   renderImages();
@@ -104,11 +118,11 @@ async function renderContainers() {
       <td style="color:var(--text-dim);font-size:11px">${c.ports || '—'}</td>
       <td>
         <div class="action-row" style="justify-content:flex-end">
-          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}" style="width:100px;padding:7px 12px">📄 Log</button>
           ${running
             ? `<button class="btn btn-red" data-action="stop" data-id="${c.id}" style="width:100px">■ Stop</button>`
             : `<button class="btn btn-green" data-action="start" data-id="${c.id}" style="width:100px">▶ Start</button>`
           }
+          <button class="btn" data-action="logs" data-id="${c.id}" data-name="${c.name}" style="width:100px;padding:7px 12px">📄 Log</button>
         </div>
       </td>
     `;
