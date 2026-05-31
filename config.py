@@ -26,9 +26,24 @@ def update_headscale_url(new_url: str):
     cfg = load()
     HEADSCALE_URL = cfg["headscale"]["url"]
 
+def update_compose_dir(new_dir: str):
+    global cfg, COMPOSE_BASE_DIR
+    p = get_path()
+    text = p.read_text()
+    if '[compose]' in text:
+        text = re.sub(r'(base_dir\s*=\s*")[^"]*(")', rf'\g<1>{new_dir}\2', text)
+    else:
+        text += f'\n[compose]\nbase_dir = "{new_dir}"\n'
+    p.write_text(text)
+    cfg = load()
+    COMPOSE_BASE_DIR = cfg.get("compose", {}).get("base_dir", str(Path.home() / "docker"))
+
+
 cfg = load()
 HEADSCALE_URL    = cfg["headscale"]["url"]
 HEADSCALE_APIKEY = cfg["headscale"]["api_key"]
+COMPOSE_BASE_DIR = cfg.get("compose", {}).get("base_dir", str(Path.home() / "docker"))
+
 # GLANCES_PORT     = cfg["glances"]["port"]
 # SERVER_HOST      = cfg["server"]["host"]
 # SERVER_PORT      = cfg["server"]["port"]
