@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from routers import shortcuts, docker, tailscale, resources
+from routers import ca, shortcuts, docker, tailscale, resources
 
 app = FastAPI(title="ZimaDash")
 
