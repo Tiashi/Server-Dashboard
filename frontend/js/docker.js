@@ -219,6 +219,7 @@ async function loadStackStatus(name) {
         <td class="c-name">${c.name}</td>
         <td class="c-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${isRunning ? 'running' : 'exited'}</span></td>
         <td class="c-ports" style="${ports === '—' ? 'display:none' : ''}">${ports}</td>
+        <td class="c-actions">
           <div class="row-actions">
             ${toggleBtn}
             <button class="btn-row" data-action="logs" data-stack="${name}" data-container="${c.name}">📄 Logs</button>
