@@ -1,6 +1,7 @@
 import subprocess
 import re
 import yaml
+import json as _json
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -109,6 +110,19 @@ def _update_image_tag(app: str, service: str, new_tag: str):
         new_lines.append(line)
     
     compose_file.write_text("".join(new_lines))
+
+
+# ══════════════════════════════════════════════════════════════
+# CONTAINER LOGS
+# ══════════════════════════════════════════════════════════════
+
+@router.get("/log-parsers")
+def get_log_parsers():
+    path = Path("config/docker_logs.json")
+    if not path.exists():
+        return {}
+    import json as _json
+    return _json.loads(path.read_text())
 
 # ══════════════════════════════════════════════════════════════
 # COMPOSE SETTINGS
