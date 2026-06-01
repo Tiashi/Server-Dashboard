@@ -428,19 +428,38 @@ function formatLogs(raw) {
     // Rimuovi timestamp Docker iniziale
     line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
 
-    // Formatta timestamp interno → 2026-06-01 hh:mm:ss
+    // Estrai timestamp interno
+    let ts = '';
     line = line.replace(
-      /(\d{4})[\/\-](\d{2})[\/\-](\d{2})\s+(\d{2}:\d{2}:\d{2})[\.\d]*/g,
-      '<span class="log-ts">$1-$2-$3 $4</span>'
+      /(\d{4})[\/\-](\d{2})[\/\-](\d{2})\s+(\d{2}:\d{2}:\d{2})[\.\d]*/,
+      (_, y, mo, d, t) => { ts = `${y}-${mo}-${d} ${t}`; return ''; }
     );
 
-    // Livelli log → badge corti
-    line = line.replace(/\b(ERROR|ERR|FATAL|CRITICAL|CRIT)\b/gi,   '<span class="log-err">ERR</span>');
-    line = line.replace(/\b(WARN|WARNING)\b/gi,                    '<span class="log-war">WAR</span>');
-    line = line.replace(/\b(INFO|NOTICE)\b/gi,                     '<span class="log-inf">INF</span>');
-    line = line.replace(/\b(DEBUG|TRACE)\b/gi,                     '<span class="log-dbg">DBG</span>');
+    // Estrai livello log
+    let level = '';
+    let levelCls = '';
+    const levelMap = [
+      { re: /\b(ERROR|ERR|FATAL|CRITICAL|CRIT)\b/i, label: 'ERR', cls: 'log-err' },
+      { re: /\b(WARN|WARNING)\b/i,                   label: 'WAR', cls: 'log-war' },
+      { re: /\b(INFO|NOTICE)\b/i,                    label: 'INF', cls: 'log-inf' },
+      { re: /\b(DEBUG|TRACE)\b/i,                    label: 'DBG', cls: 'log-dbg' },
+    ];
+    for (const { re, label, cls } of levelMap) {
+      if (re.test(line)) {
+        level = label;
+        levelCls = cls;
+        line = line.replace(re, '');
+        break;
+      }
+    }
 
-    return `<div class="log-line">${line}</div>`;
+    // Pulisci spazi/punteggiatura residua a inizio riga
+    line = line.replace(/^[\s:\|\-\[\]]+/, '').trim();
+
+    const tsHtml    = ts    ? `<span class="log-ts">${ts}</span>` : '';
+    const levelHtml = level ? `<span class="log-lv ${levelCls}">${level}</span>` : '';
+
+    return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg">${line}</span></div>`;
   }).join('');
 }
 
