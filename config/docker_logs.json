@@ -1,6 +1,5 @@
 {
   "headscale": {
-    "strip_ansi": false,
     "timestamp": {
       "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z",
       "format": "$1 $2"
@@ -11,7 +10,6 @@
     }
   },
   "adguard": {
-    "strip_ansi": false,
     "timestamp": {
       "pattern": "(\\d{4})\\/(\\d{2})\\/(\\d{2}) (\\d{2}:\\d{2}:\\d{2})\\.\\d+",
       "format": "$1-$2-$3 $4"
@@ -22,7 +20,6 @@
     }
   },
   "navidrome": {
-    "strip_ansi": false,
     "timestamp": {
       "pattern": "time=\"(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?\"",
       "format": "$1 $2"
@@ -36,13 +33,19 @@
     }
   },
   "traefik": {
-    "strip_ansi": true,
     "timestamp": {
       "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?",
       "format": "$1 $2"
     },
     "level": {
       "pattern": "T\\d{2}:\\d{2}:\\d{2}Z?\\s+([A-Z]+)\\s",
+      "group": 1
+    }
+  },
+  "luciadotexe": {
+    "timestamp": "docker-default",
+    "level": {
+      "pattern": "([A-Z]+):",
       "group": 1
     }
   }
