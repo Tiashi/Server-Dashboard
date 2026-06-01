@@ -137,7 +137,6 @@ const formatLogs = (() => {
   }
 
   function _parseLine(line, parser) {
-    // Rimuovi sempre il timestamp Docker iniziale
     line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
 
     if (!parser || parser.strip_ansi) {
@@ -170,14 +169,19 @@ const formatLogs = (() => {
         }
       }
 
-      // Livello
+      // Livello — se remove_match toglie l'intera match dal messaggio
       if (parser.level?.pattern) {
         const m = line.match(new RegExp(parser.level.pattern));
         if (m) {
           const r = _levelFromWord(m[parser.level.group || 1]);
           level = r.label; levelCls = r.cls;
-          if (!parser.message?.pattern)
-            msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
+          if (!parser.message?.pattern) {
+            if (parser.level.remove_match) {
+              msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
+            } else {
+              msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
+            }
+          }
         }
       }
     }

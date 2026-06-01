@@ -259,7 +259,8 @@ def stop_container(container_id: str):
         raise HTTPException(500, str(e))
 
 @router.get("/containers/{container_id}/logs")
-def get_logs(container_id: str, tail: int = 100):
+def get_logs(container_id: str, tail: int = 500):
+    tail = min(tail, 2000)  # cap massimo
     try:
         c = _client().containers.get(container_id)
         logs = c.logs(tail=tail, timestamps=True).decode("utf-8", errors="replace")

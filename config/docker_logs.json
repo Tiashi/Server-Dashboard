@@ -1,0 +1,57 @@
+{
+  "headscale": {
+    "containers": ["headscale"],
+    "strip_ansi": false,
+    "timestamp": {
+      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z",
+      "format": "$1 $2"
+    },
+    "level": {
+      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z\\s+([A-Z]{3})\\s",
+      "group": 3,
+      "remove_match": true
+    }
+  },
+  "adguard": {
+    "containers": ["adguardhome", "adguard"],
+    "strip_ansi": false,
+    "timestamp": {
+      "pattern": "(\\d{4})\\/(\\d{2})\\/(\\d{2}) (\\d{2}:\\d{2}:\\d{2})\\.\\d+",
+      "format": "$1-$2-$3 $4"
+    },
+    "level": {
+      "pattern": "\\[(\\w+)\\]",
+      "group": 1,
+      "remove_match": true
+    }
+  },
+  "navidrome": {
+    "containers": ["navidrome"],
+    "strip_ansi": false,
+    "timestamp": {
+      "pattern": "time=\"(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?\"",
+      "format": "$1 $2"
+    },
+    "level": {
+      "pattern": "level=(\\S+)",
+      "group": 1,
+      "remove_match": true
+    },
+    "message": {
+      "pattern": "msg=\"([^\"]*)\""
+    }
+  },
+  "traefik": {
+    "containers": ["traefik"],
+    "strip_ansi": true,
+    "timestamp": {
+      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?",
+      "format": "$1 $2"
+    },
+    "level": {
+      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?\\s+([A-Z]+)\\s",
+      "group": 3,
+      "remove_match": true
+    }
+  }
+}
