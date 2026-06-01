@@ -458,8 +458,8 @@ function formatLogs(raw) {
 
     const tsHtml    = ts    ? `<span class="log-ts">${ts}</span>` : '';
     const levelHtml = level ? `<span class="log-lv ${levelCls}">${level}</span>` : '';
-
-    return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg ${levelCls}">${line}</span></div>`;
+    
+    return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg">${line}</span></div>`;
   }).join('');
 }
 
