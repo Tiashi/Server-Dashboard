@@ -41,12 +41,5 @@
       "pattern": "T\\d{2}:\\d{2}:\\d{2}Z?\\s+([A-Z]+)\\s",
       "group": 1
     }
-  },
-  "luciadotexe": {
-    "timestamp": "docker-default",
-    "level": {
-      "pattern": "([A-Z]+):",
-      "group": 1
-    }
   }
 }
