@@ -153,8 +153,9 @@ const formatLogs = (() => {
     if (parser.level?.pattern) {
       const m = line.match(new RegExp(parser.level.pattern));
       if (m) {
-        levelMatch = m[0];
-        const r = _levelFromWord(m[parser.level.group || 1]);
+        const group = parser.level.group ?? 1;
+        levelMatch = m[group];
+        const r = _levelFromWord(levelMatch);
         level = r.label;
         levelCls = r.cls;
       }
@@ -164,22 +165,26 @@ const formatLogs = (() => {
     if (parser.timestamp?.pattern) {
       const m = line.match(new RegExp(parser.timestamp.pattern));
       if (m) {
-        timestampMatch = m[0];
-        ts = parser.timestamp.format ? parser.timestamp.format.replace(/\$(\d+)/g, (_, n) => m[n] || ''): m[0];
+        const group = parser.timestamp.group ?? null;
+        timestampMatch = group ? m[group] : m[0];
+        ts = parser.timestamp.format ? parser.timestamp.format.replace(/\$(\d+)/g, (_, n) => m[n] || ''): timestampMatch;
       }
     }
 
     // 3. Estrazione Message
     if (parser.message?.pattern) {
       const m = line.match(new RegExp(parser.message.pattern));
-      if (m) msg = m[1] || m[0];
+      if (m) {
+        const group = parser.message.group ?? 1;
+        msg = m[group] ?? m[0];
+      }
     } else {
       msg = line;
       if (timestampMatch) msg = msg.replace(timestampMatch, '');
       if (levelMatch) msg = msg.replace(levelMatch, '');
       msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
     }
-    
+
     return _renderLine(ts, level, msg, levelCls);
   }
 
