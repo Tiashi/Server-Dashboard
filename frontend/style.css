@@ -785,36 +785,6 @@ option {
   justify-content: flex-end;
 }
 
-/* @media (max-width: 1000px) {
-  
-  .btn-row {
-    width: 72px;
-    flex-shrink: 0;
-    margin-top: 0;
-    height: 28px;
-    padding: 0 8px;
-    font-size: 10px;
-  }
-  .compose-tbl thead { display: none; }
-  .compose-tbl tbody { display: flex; flex-direction: column; }
-
-  .compose-tbl tr {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .compose-tbl td { padding: 0; border: none; }
-  .compose-tbl td.c-name    { flex: 1; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .compose-tbl td.c-status  { display: block !important; flex-shrink: 0; }
-  .compose-tbl td.c-ports   { display: none !important; }
-  .compose-tbl td.c-actions { flex-shrink: 0; }
-
-  .row-actions { flex-direction: row; gap: 4px; }
-} */
-
 @media (max-width: 1000px) {
   .btn-row {
     width: 72px;
@@ -831,12 +801,12 @@ option {
 
   .compose-tbl tr {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: auto 1fr auto;
     grid-template-areas:
-      "name status actions"
+      "status name actions"
       "ports ports ports";
     column-gap: 8px;
-    row-gap: 4px;
+    row-gap: 0;
     padding: 10px 16px;
     border-bottom: 1px solid var(--border);
     align-items: center;
@@ -862,7 +832,7 @@ option {
   .compose-tbl td.c-status {
     grid-area: status;
     display: block !important;
-    text-align: center;
+    text-align: left;
   }
   .compose-tbl td.c-ports {
     grid-area: ports;
@@ -872,6 +842,8 @@ option {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: left;
+    margin-top: 4px;
   }
   .compose-tbl td.c-actions {
     grid-area: actions;
