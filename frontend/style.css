@@ -841,6 +841,13 @@ option {
     border-bottom: 1px solid var(--border);
     align-items: center;
   }
+  .compose-tbl tr.no-ports {
+    grid-template-areas: "name status actions";
+    grid-template-columns: 1fr auto auto;
+  }
+  .compose-tbl tr.no-ports td.c-ports {
+    display: none !important;
+  }
 
   .compose-tbl td { padding: 0; border: none; }
 
@@ -869,6 +876,7 @@ option {
   .compose-tbl td.c-actions {
     grid-area: actions;
   }
+  
 
   .row-actions {
     flex-direction: row;
