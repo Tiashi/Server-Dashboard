@@ -100,9 +100,149 @@ async function loadDocker() {
     }
   });
 
+  _injectComposeStyle();
   renderComposeList();
   renderImages();
   renderNetworks();
+}
+
+// ── STYLE ─────────────────────────────────────────────────────
+function _injectComposeStyle() {
+  if (document.getElementById('compose-style')) return;
+  const s = document.createElement('style');
+  s.id = 'compose-style';
+  s.textContent = `
+    .compose-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .compose-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .compose-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .compose-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .compose-stack-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .compose-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--text-dim);
+    }
+    .compose-dot.dot-green  { background: var(--teal); }
+    .compose-dot.dot-yellow { background: var(--amber); }
+    .compose-dot.dot-red    { background: var(--red); }
+    .compose-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .compose-tbl th {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 7px 16px 6px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .compose-tbl th.c-name    { width: 30%; text-align: left; }
+    .compose-tbl th.c-status  { width: 14%; text-align: center; }
+    .compose-tbl th.c-ports   { width: 18%; text-align: center; }
+    .compose-tbl th.c-actions { width: 38%; text-align: right; }
+    .compose-tbl td {
+      font-size: 11px;
+      padding: 7px 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--bg3);
+    }
+    .compose-tbl tr:last-child td { border-bottom: none; }
+    .compose-tbl td.c-name    { color: #fff; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .compose-tbl td.c-status  { text-align: center; }
+    .compose-tbl td.c-ports   { text-align: center; color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .compose-tbl td.c-actions { text-align: right; }
+    .compose-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .compose-footer-left  { display: flex; gap: 6px; }
+    .compose-footer-right { display: flex; gap: 6px; }
+    .btn-compose {
+      width: 64px;
+      padding: 5px 0;
+      text-align: center;
+      border-radius: var(--radius);
+      font-size: 11px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      letter-spacing: .3px;
+    }
+    .btn-compose:hover { background: var(--border); }
+    .btn-compose.c-green { border-color: var(--teal-dim); color: var(--teal); }
+    .btn-compose.c-green:hover { background: rgba(78,205,196,.1); }
+    .btn-compose.c-red { border-color: #7a2020; color: var(--red); }
+    .btn-compose.c-red:hover { background: rgba(224,80,80,.1); }
+    .btn-row {
+      width: 64px;
+      padding: 4px 0;
+      text-align: center;
+      border-radius: var(--radius);
+      font-size: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .btn-row:hover { background: var(--border); }
+    .btn-row.r-green { border-color: var(--teal-dim); color: var(--teal); }
+    .btn-row.r-green:hover { background: rgba(78,205,196,.1); }
+    .btn-row.r-red { border-color: #7a2020; color: var(--red); }
+    .btn-row.r-red:hover { background: rgba(224,80,80,.1); }
+    .btn-row.r-amber { border-color: var(--amber-dim); color: var(--amber); }
+    .btn-row.r-amber:hover { background: rgba(232,168,56,.1); }
+    .row-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+    .compose-empty { padding: 14px 16px; color: var(--text-dim); font-size: 11px; }
+
+    @media (max-width: 820px) {
+      .compose-tbl th.c-ports,
+      .compose-tbl td.c-ports { display: none; }
+      .compose-tbl th.c-name    { width: 35%; }
+      .compose-tbl th.c-status  { width: 20%; }
+      .compose-tbl th.c-actions { width: 45%; }
+    }
+  `;
+  document.head.appendChild(s);
 }
 
 // ── COMPOSE LIST ──────────────────────────────────────────────
@@ -124,36 +264,35 @@ async function renderComposeList() {
     return;
   }
 
-  el.innerHTML = `
-    <div class="compose-grid">
-      ${stacks.map(s => `
-        <div class="compose-card" id="stack-${s.name}">
-          <div class="compose-card-header">
-            <div class="compose-card-title">
-              <span class="compose-dot" id="stack-dot-${s.name}"></span>
-              <span style="color:#fff;font-size:13px;font-weight:600">${s.name}</span>
-              <span id="stack-badge-${s.name}"></span>
-            </div>
+  el.innerHTML = `<div class="compose-wrap">
+    ${stacks.map(s => `
+      <div class="compose-block" id="stack-${s.name}">
+        <div class="compose-header">
+          <div class="compose-header-left">
+            <span class="compose-dot" id="stack-dot-${s.name}"></span>
+            <span class="compose-stack-name">${s.name}</span>
           </div>
-          <div id="stack-table-${s.name}">
-            <div class="empty-state" style="padding:20px"><div class="spinner"></div></div>
+          <span id="stack-badge-${s.name}"></span>
+        </div>
+        <div id="stack-table-${s.name}">
+          <div class="empty-state" style="padding:20px"><div class="spinner"></div></div>
+        </div>
+        <div class="compose-footer">
+          <div class="compose-footer-left">
+            <button class="btn-compose c-green" data-action="up"   data-stack="${s.name}">▲ Up</button>
+            <button class="btn-compose c-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
           </div>
-          <div class="compose-card-footer">
-            <button class="btn" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
-            <div class="compose-footer-divider"></div>
-            <button class="btn btn-green" data-action="up" data-stack="${s.name}">▲ Up</button>
-            <button class="btn btn-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
+          <div class="compose-footer-right">
+            <button class="btn-compose" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
           </div>
         </div>
-      `).join('')}
-    </div>
-  `;
-
-  _injectComposeGridStyle();
+      </div>
+    `).join('')}
+  </div>`;
 
   stacks.forEach(s => loadStackStatus(s.name));
 
-  document.getElementById('compose-list').addEventListener('click', async e => {
+  el.addEventListener('click', async e => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
     const { action, stack, container } = btn.dataset;
@@ -165,117 +304,20 @@ async function renderComposeList() {
   });
 }
 
-function _injectComposeGridStyle() {
-  if (document.getElementById('compose-grid-style')) return;
-  const style = document.createElement('style');
-  style.id = 'compose-grid-style';
-  style.textContent = `
-    .compose-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 14px;
-    }
-    .compose-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .compose-card-header {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-    .compose-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .compose-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--text-dim);
-    }
-    .compose-dot.dot-green  { background: var(--teal); }
-    .compose-dot.dot-yellow { background: var(--amber); }
-    .compose-dot.dot-red    { background: var(--red); }
-    .compose-card-footer {
-      padding: 10px 14px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .compose-footer-divider {
-      width: 1px;
-      height: 14px;
-      background: var(--border);
-      margin: 0 2px;
-    }
-    .compose-stack-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    .compose-stack-table th {
-      font-size: 9px;
-      color: var(--text-dim);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 600;
-      padding: 7px 14px 6px;
-      border-bottom: 1px solid var(--border);
-    }
-    .compose-stack-table th.col-name    { width: 28%; text-align: left; }
-    .compose-stack-table th.col-status  { width: 18%; text-align: center; }
-    .compose-stack-table th.col-ports   { width: 18%; text-align: center; }
-    .compose-stack-table th.col-actions { width: 36%; text-align: right; }
-    .compose-stack-table td {
-      font-size: 11px;
-      padding: 6px 14px;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--bg3);
-    }
-    .compose-stack-table tr:last-child td { border-bottom: none; }
-    .compose-stack-table td.col-name    { color: #fff; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .compose-stack-table td.col-status  { text-align: center; }
-    .compose-stack-table td.col-ports   { text-align: center; color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .compose-stack-table td.col-actions { text-align: right; }
-    .container-row-actions {
-      display: flex;
-      gap: 4px;
-      justify-content: flex-end;
-      align-items: center;
-    }
-    .btn-icon {
-      padding: 4px 7px;
-      font-size: 11px;
-    }
-    @media (max-width: 820px) {
-      .compose-grid {
-        grid-template-columns: 1fr;
-      }
-      .compose-stack-table th.col-ports,
-      .compose-stack-table td.col-ports {
-        display: none;
-      }
-      .compose-stack-table th.col-name    { width: 35%; }
-      .compose-stack-table th.col-status  { width: 25%; }
-      .compose-stack-table th.col-actions { width: 40%; }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
 // ── STACK STATUS ──────────────────────────────────────────────
 async function loadStackStatus(name) {
   const tableEl = document.getElementById(`stack-table-${name}`);
   const badgeEl = document.getElementById(`stack-badge-${name}`);
   const dotEl   = document.getElementById(`stack-dot-${name}`);
   if (!tableEl) return;
+
+  const thead = `
+    <thead><tr>
+      <th class="c-name">Container</th>
+      <th class="c-status">Stato</th>
+      <th class="c-ports">Porte</th>
+      <th class="c-actions">Azioni</th>
+    </tr></thead>`;
 
   try {
     const data = await GET(`/docker/compose/stacks/${name}/status`);
@@ -285,14 +327,8 @@ async function loadStackStatus(name) {
       dotEl.className = 'compose-dot dot-red';
       badgeEl.innerHTML = `<span class="badge badge-red">down</span>`;
       tableEl.innerHTML = `
-        <table class="compose-stack-table">
-          <thead><tr>
-            <th class="col-name">Container</th>
-            <th class="col-status">Stato</th>
-            <th class="col-ports">Porte</th>
-            <th class="col-actions">Azioni</th>
-          </tr></thead>
-          <tbody><tr><td colspan="4" style="padding:14px;color:var(--text-dim);font-size:11px">Nessun container attivo</td></tr></tbody>
+        <table class="compose-tbl">${thead}
+          <tbody><tr><td class="compose-empty" colspan="4">Nessun container attivo</td></tr></tbody>
         </table>`;
       return;
     }
@@ -319,38 +355,29 @@ async function loadStackStatus(name) {
         .join(', ') || '—';
 
       const toggleBtn = isRunning
-        ? `<button class="btn btn-red btn-icon" data-action="stop" data-stack="${name}" data-container="${c.name}">■ Stop</button>`
-        : `<button class="btn btn-green btn-icon" data-action="start" data-stack="${name}" data-container="${c.name}">▶ Start</button>`;
+        ? `<button class="btn-row r-red"   data-action="stop"  data-stack="${name}" data-container="${c.name}">■ Stop</button>`
+        : `<button class="btn-row r-green" data-action="start" data-stack="${name}" data-container="${c.name}">▶ Start</button>`;
 
       return `<tr>
-        <td class="col-name">${c.name}</td>
-        <td class="col-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${c.status || c.state}</span></td>
-        <td class="col-ports">${ports}</td>
-        <td class="col-actions">
-          <div class="container-row-actions">
+        <td class="c-name">${c.name}</td>
+        <td class="c-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${c.status || c.state}</span></td>
+        <td class="c-ports">${ports}</td>
+        <td class="c-actions">
+          <div class="row-actions">
             ${toggleBtn}
-            <button class="btn btn-icon" data-action="logs" data-stack="${name}" data-container="${c.name}">📄 Logs</button>
-            <button class="btn btn-icon" style="border-color:var(--amber-dim);color:var(--amber)" data-action="update-image" data-stack="${name}" data-container="${c.name}">🏷</button>
+            <button class="btn-row" data-action="logs" data-stack="${name}" data-container="${c.name}">📄 Logs</button>
+            <button class="btn-row r-amber" data-action="update-image" data-stack="${name}" data-container="${c.name}">🏷 Image</button>
           </div>
         </td>
       </tr>`;
     }).join('');
 
-    tableEl.innerHTML = `
-      <table class="compose-stack-table">
-        <thead><tr>
-          <th class="col-name">Container</th>
-          <th class="col-status">Stato</th>
-          <th class="col-ports">Porte</th>
-          <th class="col-actions">Azioni</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+    tableEl.innerHTML = `<table class="compose-tbl">${thead}<tbody>${rows}</tbody></table>`;
 
   } catch(e) {
     dotEl.className = 'compose-dot dot-red';
     badgeEl.innerHTML = `<span class="badge badge-red">errore</span>`;
-    tableEl.innerHTML = `<div class="empty-state" style="padding:16px">Impossibile leggere lo stato</div>`;
+    tableEl.innerHTML = `<div class="compose-empty">Impossibile leggere lo stato</div>`;
   }
 }
 
@@ -392,17 +419,14 @@ async function handleContainerAction(action, stack, container, btn) {
     openContainerLogsModal(container);
     return;
   }
-
   if (action === 'update-image') {
     openUpdateImageModal(stack, container);
     return;
   }
 
-  // start / stop
   const origText = btn.textContent;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner" style="width:9px;height:9px;border-width:1.5px"></span>';
-
   try {
     await POST(`/docker/containers/${container}/${action}`);
     await loadStackStatus(stack);
@@ -423,11 +447,7 @@ async function openUpdateImageModal(stack, containerName) {
     return;
   }
 
-  // Se viene da un container specifico, filtra solo il servizio relativo
-  // (il nome container di solito contiene il nome servizio)
-  const filtered = images.filter(img =>
-    containerName ? containerName.includes(img.service) : true
-  );
+  const filtered = images.filter(img => containerName ? containerName.includes(img.service) : true);
   const list = filtered.length ? filtered : images;
 
   const modal   = document.getElementById('log-modal');
@@ -437,8 +457,8 @@ async function openUpdateImageModal(stack, containerName) {
   titleEl.textContent = `Aggiorna immagine — ${containerName || stack}`;
   modal.classList.remove('hidden');
   content.style.display = 'none';
-
   modal.querySelector('.update-image-form')?.remove();
+
   const form = document.createElement('div');
   form.className = 'update-image-form';
   form.style.cssText = 'padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1';
@@ -469,7 +489,7 @@ async function openUpdateImageModal(stack, containerName) {
     if (!btn) return;
 
     const svc   = btn.dataset.updateSvc || btn.dataset.deploySvc;
-    const stack = btn.dataset.stack;
+    const stk   = btn.dataset.stack;
     const input = form.querySelector(`.img-tag-input[data-service="${svc}"]`);
     const tag   = input?.value.trim();
     if (!tag) return;
@@ -480,15 +500,15 @@ async function openUpdateImageModal(stack, containerName) {
 
     try {
       if (updateBtn) {
-        await POST(`/docker/compose/stacks/${stack}/images/update`, { service: svc, tag });
+        await POST(`/docker/compose/stacks/${stk}/images/update`, { service: svc, tag });
         btn.textContent = '✓ Salvato';
         btn.style.color = 'var(--teal)';
         setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.disabled = false; }, 1500);
       } else {
-        const res = await POST(`/docker/compose/stacks/${stack}/images/update-and-deploy`, { service: svc, tag });
+        const res = await POST(`/docker/compose/stacks/${stk}/images/update-and-deploy`, { service: svc, tag });
         _closeUpdateModal(modal, form, content);
-        openOutputModal(stack, 'pull + up', res.output || '');
-        await loadStackStatus(stack);
+        openOutputModal(stk, 'pull + up', res.output || '');
+        await loadStackStatus(stk);
       }
     } catch(err) {
       btn.textContent = '✕ Errore';
@@ -531,7 +551,6 @@ async function openContainerLogsModal(containerName) {
   content.textContent = 'Caricamento...';
   modal.classList.remove('hidden');
 
-  // Usa l'ID corto del container — cerca per nome
   try {
     const containers = await GET('/docker/containers');
     const match = containers.find(c => c.name === containerName);
