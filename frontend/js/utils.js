@@ -102,6 +102,118 @@ const sanitize = str => str.toLowerCase().trim().replace(/\s+/g, '-').replace(/[
 
 
 
+// const formatLogs = (() => {
+//   let _cache = null;
+
+//   async function _loadParsers() {
+//     if (_cache) return _cache;
+//     try { _cache = await GET('/docker/log-parsers'); }
+//     catch(e) { _cache = {}; }
+//     return _cache;
+//   }
+
+//   function _findParser(parsers, containerName) {
+//     if (!containerName) return null;
+//     const name = containerName.toLowerCase();
+//     const matchedKey = Object.keys(parsers).find(key => key.toLowerCase() === name);
+//     return matchedKey ? parsers[matchedKey] : null;
+//   }
+
+//   function _levelFromWord(word) {
+//     word = (word || '').toLowerCase();
+//     if (/^(error|err|fatal|critical|crit)$/.test(word)) return { label: 'ERR', cls: 'log-err' };
+//     if (/^(warn|warning|wrn)$/.test(word))              return { label: 'WAR', cls: 'log-war' };
+//     if (/^(info|inf|notice)$/.test(word))               return { label: 'INF', cls: 'log-inf' };
+//     if (/^(debug|trace|dbg)$/.test(word))               return { label: 'DBG', cls: 'log-dbg' };
+//     return { label: '', cls: '' };
+//   }
+
+//   function _renderLine(ts, level, msg, cls = '') {
+//     if (!ts && !level && !msg.trim()) return '';
+//     const tsHtml  = ts    ? `<span class="log-ts">${ts}</span>`       : '';
+//     const lvHtml  = level ? `<span class="log-lv ${cls}">${level}</span>` : '';
+//     return `<div class="log-line">${tsHtml}${lvHtml}<span class="log-msg">${msg}</span></div>`;
+//   }
+
+//   function _parseLine(line, parser) {
+    
+//     line = line.replace(/\x1b\[[0-9;]*m/g, '');
+//     if (!parser) {
+//       return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
+//     }
+
+//     let ts = '', msg = line, level = '', levelCls = '';
+
+//     const dockerTsRegex = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z\s*/;
+//     const dockerTsMatch = line.match(dockerTsRegex);
+
+//     if (parser.timestamp === 'docker-default' && dockerTsMatch) {
+//       ts = `${dockerTsMatch[1]} ${dockerTsMatch[2]}`;
+//     }
+
+//     msg = msg.replace(dockerTsRegex, '');
+//     if (!msg.trim()) return '';
+
+//     // 1. Messaggio specifico (es. msg="...")
+//     if (parser.message?.pattern) {
+//       const m = msg.match(new RegExp(parser.message.pattern));
+//       if (m) msg = m[1];
+//     }
+
+//     // 2. Timestamp custom da pattern (eseguito solo se NON è "docker-default" ed è un oggetto valido)
+//     if (parser.timestamp && typeof parser.timestamp === 'object' && parser.timestamp.pattern) {
+//       const m = line.match(new RegExp(parser.timestamp.pattern));
+//       if (m) {
+//         ts = parser.timestamp.format
+//           .replace('$1', m[1] || '')
+//           .replace('$2', m[2] || '')
+//           .replace('$3', m[3] || '')
+//           .replace('$4', m[4] || '')
+//           .trim();
+        
+//         if (!parser.message?.pattern) {
+//           msg = msg.replace(new RegExp(parser.timestamp.pattern), '').trim();
+//         }
+//       }
+//     }
+
+//     // 3. Livello log
+//     if (parser.level?.pattern) {
+//       const m = msg.match(new RegExp(parser.level.pattern));
+//       if (m) {
+//         const r = _levelFromWord(m[parser.level.group || 1]);
+//         level = r.label; 
+//         levelCls = r.cls;
+        
+//         if (!parser.message?.pattern) {
+//           msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
+//         }
+//       }
+//     }
+
+//     // Pulizia finale caratteri di scarto sul messaggio pronto
+//     msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+//     return _renderLine(ts, level, msg, levelCls);
+//   }
+
+//   return async function formatLogs(raw, containerName) {
+//     if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
+//     const parsers = await _loadParsers();
+//     const parser  = _findParser(parsers, containerName);
+//     return raw.split('\n')
+//       .filter(l => l.trim())
+//       .map(line => _parseLine(line, parser))
+//       .filter(Boolean)
+//       .join('');
+//   };
+// })();
+
+
+
+
+
+
+
 const formatLogs = (() => {
   let _cache = null;
 
@@ -122,9 +234,9 @@ const formatLogs = (() => {
   function _levelFromWord(word) {
     word = (word || '').toLowerCase();
     if (/^(error|err|fatal|critical|crit)$/.test(word)) return { label: 'ERR', cls: 'log-err' };
-    if (/^(warn|warning|wrn)$/.test(word))              return { label: 'WAR', cls: 'log-war' };
-    if (/^(info|inf|notice)$/.test(word))               return { label: 'INF', cls: 'log-inf' };
-    if (/^(debug|trace|dbg)$/.test(word))               return { label: 'DBG', cls: 'log-dbg' };
+    if (/^(warn|warning|wrn)$/.test(word))               return { label: 'WAR', cls: 'log-war' };
+    if (/^(info|inf|notice)$/.test(word))                return { label: 'INF', cls: 'log-inf' };
+    if (/^(debug|trace|dbg)$/.test(word))                return { label: 'DBG', cls: 'log-dbg' };
     return { label: '', cls: '' };
   }
 
@@ -136,31 +248,29 @@ const formatLogs = (() => {
   }
 
   function _parseLine(line, parser) {
-    
+    // 1. Rimuove sempre i codici colore ANSI
     line = line.replace(/\x1b\[[0-9;]*m/g, '');
+
+    // Se il container non è registrato, stampa la riga originale pulita
     if (!parser) {
+      if (!line.trim()) return '';
       return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
     }
 
-    let ts = '', msg = line, level = '', levelCls = '';
+    let ts = '', level = '', levelCls = '';
+    // Creiamo una copia della linea per estrarre il messaggio senza distruggere la stringa originale 'line'
+    let msgClean = line; 
 
+    // Cattura i dati del timestamp standard di Docker (presente all'inizio della riga originale)
     const dockerTsRegex = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z\s*/;
     const dockerTsMatch = line.match(dockerTsRegex);
 
+    // CASO A: Gestione del timestamp "docker-default"
     if (parser.timestamp === 'docker-default' && dockerTsMatch) {
       ts = `${dockerTsMatch[1]} ${dockerTsMatch[2]}`;
     }
 
-    msg = msg.replace(dockerTsRegex, '');
-    if (!msg.trim()) return '';
-
-    // 1. Messaggio specifico (es. msg="...")
-    if (parser.message?.pattern) {
-      const m = msg.match(new RegExp(parser.message.pattern));
-      if (m) msg = m[1];
-    }
-
-    // 2. Timestamp custom da pattern (eseguito solo se NON è "docker-default" ed è un oggetto valido)
+    // CASO B: Gestione del timestamp custom tramite pattern (eseguito solo se è un oggetto)
     if (parser.timestamp && typeof parser.timestamp === 'object' && parser.timestamp.pattern) {
       const m = line.match(new RegExp(parser.timestamp.pattern));
       if (m) {
@@ -170,36 +280,48 @@ const formatLogs = (() => {
           .replace('$3', m[3] || '')
           .replace('$4', m[4] || '')
           .trim();
-        
-        if (!parser.message?.pattern) {
-          msg = msg.replace(new RegExp(parser.timestamp.pattern), '').trim();
-        }
       }
     }
 
-    // 3. Livello log
+    // 2. Estrazione del Livello del log (sempre dalla riga originale 'line')
     if (parser.level?.pattern) {
-      const m = msg.match(new RegExp(parser.level.pattern));
+      const m = line.match(new RegExp(parser.level.pattern));
       if (m) {
         const r = _levelFromWord(m[parser.level.group || 1]);
         level = r.label; 
         levelCls = r.cls;
-        
-        if (!parser.message?.pattern) {
-          msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-        }
       }
     }
 
-    // Pulizia finale caratteri di scarto sul messaggio pronto
-    msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
-    return _renderLine(ts, level, msg, levelCls);
+    // 3. Costruzione del messaggio pulito
+    if (parser.message?.pattern) {
+      // Se c'è un pattern esplicito per il messaggio (es. Navidrome), usiamo quello
+      const m = line.match(new RegExp(parser.message.pattern));
+      msgClean = m ? m[1] : line.replace(dockerTsRegex, '');
+    } else {
+      // Altrimenti prendiamo la riga intera, togliamo il timestamp di Docker e i vecchi pattern usati
+      msgClean = msgClean.replace(dockerTsRegex, '');
+      
+      if (parser.timestamp && typeof parser.timestamp === 'object' && parser.timestamp.pattern) {
+        msgClean = msgClean.replace(new RegExp(parser.timestamp.pattern), '');
+      }
+      if (parser.level?.pattern) {
+        msgClean = msgClean.replace(new RegExp(parser.level.pattern), '');
+      }
+    }
+
+    // Pulizia finale dei caratteri di scarto (es. spazi, due punti rimasti isolati, ecc.)
+    msgClean = msgClean.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+    
+    if (!msgClean && !ts && !level) return '';
+    return _renderLine(ts, level, msgClean, levelCls);
   }
 
   return async function formatLogs(raw, containerName) {
     if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
     const parsers = await _loadParsers();
-    const parser  = _findParser(parsers, containerName);
+    const parser  = _findParser(parsers, containerName); 
+    
     return raw.split('\n')
       .filter(l => l.trim())
       .map(line => _parseLine(line, parser))
