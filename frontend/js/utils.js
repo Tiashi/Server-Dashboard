@@ -147,105 +147,46 @@ const formatLogs = (() => {
     // Creo le variabili da stampare
     let ts = '', msg = line, level = '', levelCls = '';
 
-    // 1. Messaggio specifico (es. msg="...")
-    if (parser.message?.pattern) {
-      const m = line.match(new RegExp(parser.message.pattern));
-      if (m) msg = m[1];
-    }
-
-    // 2. Timestamp specifico
-    if (parser.timestamp?.pattern) {
-      const m = line.match(new RegExp(parser.timestamp.pattern));
-      if (m) {
-        ts = parser.timestamp.format
-          .replace('$1', m[1] || '')
-          .replace('$2', m[2] || '')
-          .replace('$3', m[3] || '')
-          .replace('$4', m[4] || '')
-          .trim();
-        
-        if (!parser.message?.pattern) {
-          msg = msg.replace(new RegExp(parser.timestamp.pattern), '').trim();
-        }
-      }
-    }
-
-    // 3. Livello log
+    // 1. Estrazione Level
     if (parser.level?.pattern) {
       const m = line.match(new RegExp(parser.level.pattern));
       if (m) {
         const r = _levelFromWord(m[parser.level.group || 1]);
         level = r.label; 
         levelCls = r.cls;
-        
-        if (!parser.message?.pattern) {
-          msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-        }
       }
     }
-    
+
+    // 2. Estrazione Timestamp
+    if (parser.timestamp === 'docker-default' && dockerTsMatch) {
+      ts = `${dockerTsMatch[1]} ${dockerTsMatch[2]}`;
+    } else if (parser.timestamp && typeof parser.timestamp === 'object' && parser.timestamp.pattern) {
+      const m = line.match(new RegExp(parser.timestamp.pattern));
+      if (m) {
+        ts = parser.timestamp.format.replace('$1', m[1] || '').replace('$2', m[2] || '').trim();
+      }
+    }
+
+    // 3. Estrazione Message
+    if (parser.message?.pattern) {
+      const m = line.match(new RegExp(parser.message.pattern));
+      msg = m ? m[1] : line.replace(dockerTsRegex, '');
+    } else {
+      msg = line;
+      msg = msg.replace(dockerTsRegex, ''); // Togle Docker Timestamp
+      
+      if (parser.timestamp?.pattern) {
+        msg = msg.replace(new RegExp(parser.timestamp.pattern), '');
+      }
+      if (parser.level?.pattern) {
+        msg = msg.replace(new RegExp(parser.level.pattern), '');
+      }
+    }
+
     // Pulizia finale dei caratteri di scarto sul messaggio formattato
-    msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+    // msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
     return _renderLine(ts, level, msg, levelCls);
   }
-  // function _parseLine(line, parser) {
-
-  //   // if (!parser) {
-  //   //   if (!line.trim()) return '';
-  //   //   return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
-  //   // }
-
-
-  //   line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
-  //   if (!parser || parser.strip_ansi) {
-  //     line = line.replace(/\x1b\[[0-9;]*m/g, '');
-  //   }
-  //   if (!line.trim()) return '';
-
-  //   let ts = '', msg = line, level = '', levelCls = '';
-
-  //   if (parser) {
-  //     // Messaggio specifico (es. Navidrome msg="...")
-  //     if (parser.message?.pattern) {
-  //       const m = line.match(new RegExp(parser.message.pattern));
-  //       if (m) msg = m[1];
-  //     }
-
-  //     // Timestamp
-  //     if (parser.timestamp?.pattern) {
-  //       const m = line.match(new RegExp(parser.timestamp.pattern));
-  //       if (m) {
-  //         ts = parser.timestamp.format
-  //           .replace('$1', m[1] || '')
-  //           .replace('$2', m[2] || '')
-  //           .replace('$3', m[3] || '')
-  //           .replace('$4', m[4] || '')
-  //           .trim();
-  //         if (!parser.message?.pattern)
-  //           msg = msg.replace(new RegExp(parser.timestamp.pattern), '').trim();
-  //       }
-  //     }
-
-  //     // Livello — se remove_match toglie l'intera match dal messaggio
-  //     if (parser.level?.pattern) {
-  //       const m = line.match(new RegExp(parser.level.pattern));
-  //       if (m) {
-  //         const r = _levelFromWord(m[parser.level.group || 1]);
-  //         level = r.label; levelCls = r.cls;
-  //         if (!parser.message?.pattern) {
-  //           if (parser.level.remove_match) {
-  //             msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-  //           } else {
-  //             msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
-  //   return _renderLine(ts, level, msg, levelCls);
-  // }
 
   return async function formatLogs(raw, containerName) {
     if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
