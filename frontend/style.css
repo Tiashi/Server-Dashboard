@@ -840,7 +840,7 @@ option {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: left;
-    margin-top: 4px;
+    margin-top: 10px;
   }
   .compose-tbl td.c-actions {
     grid-area: actions;

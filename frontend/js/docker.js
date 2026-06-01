@@ -468,6 +468,13 @@ async function renderNetworks() {
   let networks;
   try {
     networks = await GET('/docker/networks');
+    networks = networks
+    .filter(net => !['bridge', 'none', 'host'].includes(net.name))
+    .sort((a, b) => {
+      const ipA = parseInt(a.subnet?.split('.')[2] ?? '999');
+      const ipB = parseInt(b.subnet?.split('.')[2] ?? '999');
+      return ipA - ipB;
+    });
   } catch(e) {
     body.innerHTML = `<div class="empty-state">Errore: ${e.message}</div>`;
     return;
