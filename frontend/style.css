@@ -699,9 +699,9 @@ option {
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
-.compose-tbl th.c-name    { width: 28%; text-align: left; }
-.compose-tbl th.c-status  { width: 12%; text-align: left; }
-.compose-tbl th.c-ports   { width: 24%; text-align: left; }
+.compose-tbl th.c-name    { width: 24%; text-align: left; }
+.compose-tbl th.c-status  { width: 14%; text-align: center; }
+.compose-tbl th.c-ports   { width: 26%; text-align: center; }
 .compose-tbl th.c-actions { width: 36%; text-align: right; }
 .compose-tbl td {
   font-size: 11px;
@@ -711,8 +711,8 @@ option {
 }
 .compose-tbl tr:last-child td { border-bottom: none; }
 .compose-tbl td.c-name    { color: #fff; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.compose-tbl td.c-status  { text-align: left; }
-.compose-tbl td.c-ports   { text-align: left; color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.compose-tbl td.c-status  { text-align: center; }
+.compose-tbl td.c-ports   { text-align: center; color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .compose-tbl td.c-actions { text-align: right; }
 
 .compose-footer {
