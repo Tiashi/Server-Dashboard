@@ -412,7 +412,7 @@ async function openContainerLogsModal(containerName) {
     const match = containers.find(c => c.name === containerName);
     if (!match) throw new Error('Container non trovato');
     const data = await GET(`/docker/containers/${match.id}/logs?tail=200`);
-    content.innerHTML = formatLogs(data.logs || '');
+    content.innerHTML = await formatLogs(data.logs || '', containerName);
     content.scrollTop = content.scrollHeight;
   } catch(e) {
     content.textContent = `Errore: ${e.message}`;
