@@ -412,13 +412,43 @@ async function openContainerLogsModal(containerName) {
     const match = containers.find(c => c.name === containerName);
     if (!match) throw new Error('Container non trovato');
     const data = await GET(`/docker/containers/${match.id}/logs?tail=200`);
-    content.textContent = data.logs || '(nessun log)';
+    content.innerHTML = formatLogs(data.logs || '');
     content.scrollTop = content.scrollHeight;
   } catch(e) {
     content.textContent = `Errore: ${e.message}`;
   }
 
   document.getElementById('log-output-close').onclick = () => modal.classList.add('hidden');
+}
+
+function formatLogs(raw) {
+  if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
+
+  return raw.split('\n').filter(l => l.trim()).map(line => {
+    // Rimuovi timestamp Docker iniziale (es. 2026-06-01T08:28:15.185303368Z)
+    line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+
+    // Timestamp interno (es. 2026/06/01 08:28:15 oppure 08:28:15.123)
+    line = line.replace(
+      /(\d{4}[\/\-]\d{2}[\/\-]\d{2}\s+\d{2}:\d{2}:\d{2}[\.\d]*|\d{2}:\d{2}:\d{2}[\.\d]*)/g,
+      '<span class="log-ts">$1</span>'
+    );
+
+    // Livello log
+    const levelPatterns = [
+      { re: /\b(ERROR|ERR|FATAL|CRIT|CRITICAL)\b/gi,   cls: 'log-error' },
+      { re: /\b(WARN|WARNING)\b/gi,                     cls: 'log-warn'  },
+      { re: /\b(INFO|NOTICE)\b/gi,                      cls: 'log-info'  },
+      { re: /\b(DEBUG|TRACE)\b/gi,                      cls: 'log-debug' },
+    ];
+
+    for (const { re, cls } of levelPatterns) {
+      line = line.replace(re, `<span class="${cls}">$1</span>`);
+    }
+
+    // Escape HTML residuo (tranne i tag che abbiamo già inserito)
+    return `<div class="log-line">${line}</div>`;
+  }).join('');
 }
 
 // ── IMMAGINI ──────────────────────────────────────────────────
