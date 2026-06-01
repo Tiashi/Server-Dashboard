@@ -217,7 +217,7 @@ async function loadStackStatus(name) {
 
       return `<tr>
         <td class="c-name">${c.name}</td>
-        <td class="c-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${c.status || c.state}</span></td>
+        <td class="c-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${isRunning ? 'running' : 'exited'}</span></td>
         <td class="c-ports">${ports}</td>
         <td class="c-actions">
           <div class="row-actions">
