@@ -141,7 +141,7 @@ async function renderComposeList() {
           <div class="compose-footer-left">
             <button class="btn-compose c-green" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
             <div class="compose-footer-divider"></div>
-            <button class="btn-compose c-teal"  data-action="up"   data-stack="${s.name}">▲ Up</button>
+            <button class="btn-compose c-green"  data-action="up"   data-stack="${s.name}">▲ Up</button>
             <button class="btn-compose c-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
           </div>
         </div>
