@@ -425,28 +425,21 @@ function formatLogs(raw) {
   if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
 
   return raw.split('\n').filter(l => l.trim()).map(line => {
-    // Rimuovi timestamp Docker iniziale (es. 2026-06-01T08:28:15.185303368Z)
+    // Rimuovi timestamp Docker iniziale
     line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
 
-    // Timestamp interno (es. 2026/06/01 08:28:15 oppure 08:28:15.123)
+    // Formatta timestamp interno → 2026-06-01 hh:mm:ss
     line = line.replace(
-      /(\d{4}[\/\-]\d{2}[\/\-]\d{2}\s+\d{2}:\d{2}:\d{2}[\.\d]*|\d{2}:\d{2}:\d{2}[\.\d]*)/g,
-      '<span class="log-ts">$1</span>'
+      /(\d{4})[\/\-](\d{2})[\/\-](\d{2})\s+(\d{2}:\d{2}:\d{2})[\.\d]*/g,
+      '<span class="log-ts">$1-$2-$3 $4</span>'
     );
 
-    // Livello log
-    const levelPatterns = [
-      { re: /\b(ERROR|ERR|FATAL|CRIT|CRITICAL)\b/gi,   cls: 'log-error' },
-      { re: /\b(WARN|WARNING)\b/gi,                     cls: 'log-warn'  },
-      { re: /\b(INFO|NOTICE)\b/gi,                      cls: 'log-info'  },
-      { re: /\b(DEBUG|TRACE)\b/gi,                      cls: 'log-debug' },
-    ];
+    // Livelli log → badge corti
+    line = line.replace(/\b(ERROR|ERR|FATAL|CRITICAL|CRIT)\b/gi,   '<span class="log-err">ERR</span>');
+    line = line.replace(/\b(WARN|WARNING)\b/gi,                    '<span class="log-war">WAR</span>');
+    line = line.replace(/\b(INFO|NOTICE)\b/gi,                     '<span class="log-inf">INF</span>');
+    line = line.replace(/\b(DEBUG|TRACE)\b/gi,                     '<span class="log-dbg">DBG</span>');
 
-    for (const { re, cls } of levelPatterns) {
-      line = line.replace(re, `<span class="${cls}">$1</span>`);
-    }
-
-    // Escape HTML residuo (tranne i tag che abbiamo già inserito)
     return `<div class="log-line">${line}</div>`;
   }).join('');
 }
