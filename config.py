@@ -1,5 +1,5 @@
-import tomllib, re
 from pathlib import Path
+import tomlkit
 
 def get_path() -> Path:
     return Path("./config/config.toml")
