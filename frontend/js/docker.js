@@ -218,7 +218,7 @@ async function loadStackStatus(name) {
       return `<tr${ports === '—' ? ' class="no-ports"' : ''}>
         <td class="c-name">${c.name}</td>
         <td class="c-status"><span class="badge ${isRunning ? 'badge-green' : 'badge-red'}">${isRunning ? 'running' : 'exited'}</span></td>
-        <td class="c-ports" style="${ports === '—' ? 'display:none' : ''}">${ports}</td>
+        <td class="c-ports">${ports === '—' ? '' : ports}</td>
         <td class="c-actions">
           <div class="row-actions">
             ${toggleBtn}
