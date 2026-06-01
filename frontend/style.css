@@ -802,7 +802,7 @@ option {
 
 /* ── Log viewer ────────────────────────────────────────────── */
 .log-output-box { width: 1600px; }
-.log-output-box pre {
+.log-output-box #log-output-content {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
