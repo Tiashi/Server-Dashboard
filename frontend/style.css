@@ -687,7 +687,7 @@ option {
 .compose-tbl {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto;
+  table-layout: fixed;
 }
 .compose-tbl th {
   font-size: 9px;
