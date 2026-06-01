@@ -99,68 +99,105 @@ function dlgSelect(title, message, options, defaultVal = '') {
 const sanitize = str => str.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
 
+
+
+
+
+
+
 function formatLogs(raw) {
   if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
 
-  return raw.split('\n').filter(l => l.trim()).map(line => {
-    // Rimuovi codici ANSI
-    line = line.replace(/\x1b\[[0-9;]*m/g, '');
+  const lines = raw.split('\n').filter(l => l.trim());
 
-    // Rimuovi timestamp Docker iniziale
-    line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+  // Rileva il formato dominante
+  const sample = lines.slice(0, 5).join('\n');
+  let parser;
+  if (/\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}\.\d+ \[/.test(sample))       parser = parseAdguard;
+  else if (/time=".*?"\s*level=/.test(sample))                               parser = parseNavidrome;
+  else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\s+[A-Z]{3}\s/.test(sample)) parser = parseHeadscale;
+  else if (/\x1b\[/.test(sample))                                            parser = parseTraefik;
+  else                                                                        parser = parseGeneric;
 
-    // Estrai timestamp — vari formati
-    let ts = '';
-    // formato time="2026-05-31T19:35:05Z" level=info msg="..."  — gestisci prima
-    const naviMatch = line.match(/time="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z?"\s*level=\S*\s*msg="([^"]*)"/);
-    if (naviMatch) {
-      ts = `${naviMatch[1]} ${naviMatch[2]}`;
-      line = naviMatch[3]; // prendi solo il msg
-    }
+  return lines.map(line => parser(line)).filter(Boolean).join('');
+}
 
-    // formato ISO senza ms: 2026-05-31T13:43:42Z
-    if (!ts) line = line.replace(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z/, (_, d, t) => { ts = `${d} ${t}`; return ''; });
-    // formato slash o dash con spazio
-    if (!ts) line = line.replace(/(\d{4})[\/\-](\d{2})[\/\-](\d{2})\s+(\d{2}:\d{2}:\d{2})[\.\d]*/, (_, y, mo, d, t) => { ts = `${y}-${mo}-${d} ${t}`; return ''; });
+// ── AdGuard: 2026/06/01 08:07:54.298278 [info] messaggio
+function parseAdguard(line) {
+  line = line.replace(/\x1b\[[0-9;]*m/g, '');
+  line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
 
-    // Estrai livello log
-    let level = '';
-    let levelCls = '';
-    const levelMap = [
-      { re: /\b(ERROR|ERR|FATAL|CRITICAL|CRIT)\b/i, label: 'ERR', cls: 'log-err' },
-      { re: /\b(WARN|WARNING)\b/i,                   label: 'WAR', cls: 'log-war' },
-      { re: /\b(INFO|NOTICE|INF)\b/i,                label: 'INF', cls: 'log-inf' },
-      { re: /\b(DEBUG|TRACE|DBG)\b/i,                label: 'DBG', cls: 'log-dbg' },
-    ];
+  const m = line.match(/^(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2}:\d{2})\.\d*\s*\[(\w+)\]\s*(.*)/s);
+  if (!m) return renderLogLine('', '', line);
 
-    // formato level=info
-    line = line.replace(/\blevel\s*=\s*["']?(\w+)["']?/i, (_, l) => {
-      const found = levelMap.find(m => m.re.test(l));
-      if (found && !level) { level = found.label; levelCls = found.cls; }
-      return '';
-    });
+  const ts  = `${m[1].replace(/\//g, '-')} ${m[2]}`;
+  const raw = m[3].toLowerCase();
+  const msg = m[4];
 
-    // match diretto sulla riga
-    if (!level) {
-      for (const { re, label, cls } of levelMap) {
-        if (re.test(line)) {
-          level = label;
-          levelCls = cls;
-          line = line.replace(re, '');
-          break;
-        }
-      }
-    }
+  const { label, cls } = levelFromWord(raw);
+  return renderLogLine(ts, label, msg, cls);
+}
 
-    // Pulisci residui
-    line = line.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+// ── Headscale: 2026-05-31T09:15:47Z INF messaggio
+function parseHeadscale(line) {
+  line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
 
-    // Salta righe vuote dopo pulizia
-    if (!line && !ts && !level) return '';
+  const m = line.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z\s+([A-Z]{3})\s+(.*)/s);
+  if (!m) return renderLogLine('', '', line);
 
-    const tsHtml    = ts    ? `<span class="log-ts">${ts}</span>` : '';
-    const levelHtml = level ? `<span class="log-lv ${levelCls}">${level}</span>` : '';
+  const ts  = `${m[1]} ${m[2]}`;
+  const msg = m[4];
+  const { label, cls } = levelFromWord(m[3]);
+  return renderLogLine(ts, label, msg, cls);
+}
 
-    return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg">${line}</span></div>`;
-  }).filter(Boolean).join('');
+// ── Navidrome: time="2026-05-31T19:35:05Z" level=info msg="..."
+function parseNavidrome(line) {
+  line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+
+  const m = line.match(/time="(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z?"\s*level=(\S*)\s*msg="([^"]*)"/);
+  if (!m) return renderLogLine('', '', line);
+
+  const ts  = `${m[1]} ${m[2]}`;
+  const msg = m[4];
+  const { label, cls } = levelFromWord(m[3]);
+  return renderLogLine(ts, label, msg, cls);
+}
+
+// ── Traefik: [90m2026-05-31T13:43:42Z[0m [31mERR[0m messaggio
+function parseTraefik(line) {
+  line = line.replace(/\x1b\[[0-9;]*m/g, '');
+  line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+
+  const m = line.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z?\s+([A-Z]+)\s+(.*)/s);
+  if (!m) return renderLogLine('', '', line);
+
+  const ts  = `${m[1]} ${m[2]}`;
+  const msg = m[4];
+  const { label, cls } = levelFromWord(m[3]);
+  return renderLogLine(ts, label, msg, cls);
+}
+
+// ── Generico: best effort
+function parseGeneric(line) {
+  line = line.replace(/\x1b\[[0-9;]*m/g, '');
+  line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+  return renderLogLine('', '', line);
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function levelFromWord(word) {
+  word = (word || '').toLowerCase();
+  if (/^(error|err|fatal|critical|crit)$/.test(word)) return { label: 'ERR', cls: 'log-err' };
+  if (/^(warn|warning)$/.test(word))                   return { label: 'WAR', cls: 'log-war' };
+  if (/^(info|inf|notice)$/.test(word))                return { label: 'INF', cls: 'log-inf' };
+  if (/^(debug|trace|dbg)$/.test(word))                return { label: 'DBG', cls: 'log-dbg' };
+  return { label: '', cls: '' };
+}
+
+function renderLogLine(ts, level, msg, cls = '') {
+  if (!ts && !level && !msg.trim()) return '';
+  const tsHtml    = ts    ? `<span class="log-ts">${ts}</span>` : '';
+  const levelHtml = level ? `<span class="log-lv ${cls}">${level}</span>` : '';
+  return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg">${msg}</span></div>`;
 }
