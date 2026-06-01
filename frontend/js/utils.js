@@ -140,47 +140,88 @@ const formatLogs = (() => {
 
     // Rimozione timestamp docker e strip_ansi
     line = line.replace(/\x1b\[[0-9;]*m/g, '');
-    line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+    // line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
     if (!line.trim()) return '';
     if (!parser) return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
 
     // Creo le variabili da stampare
     let ts = '', msg = line, level = '', levelCls = '';
+    
+    const originalLine = line;
 
     // 1. Estrazione Level
     if (parser.level?.pattern) {
-      const m = line.match(new RegExp(parser.level.pattern));
-      if (m) {
-        const r = _levelFromWord(m[parser.level.group || 1]);
-        level = r.label; 
-        levelCls = r.cls;
-      }
+      try {
+        const re = new RegExp(parser.level.pattern);
+        const m = originalLine.match(re);
+
+        if (m) {
+          const group = parser.level.group ?? 1;
+          const r = _levelFromWord(m[group] || '');
+          level = r.label;
+          levelCls = r.cls;
+        }
+      } catch (e) {}
     }
 
     // 2. Estrazione Timestamp
-    if (parser.timestamp === 'docker-default' && dockerTsMatch) {
-      ts = `${dockerTsMatch[1]} ${dockerTsMatch[2]}`;
-    } else if (parser.timestamp && typeof parser.timestamp === 'object' && parser.timestamp.pattern) {
-      const m = line.match(new RegExp(parser.timestamp.pattern));
-      if (m) {
-        ts = parser.timestamp.format.replace('$1', m[1] || '').replace('$2', m[2] || '').trim();
-      }
+    if (parser.timestamp?.pattern) {
+      try {
+        const re = new RegExp(parser.timestamp.pattern);
+        const m = originalLine.match(re);
+
+        if (m) {
+          if (parser.timestamp.format) {
+            ts = parser.timestamp.format.replace(
+              /\$(\d+)/g,
+              (_, idx) => m[Number(idx)] || ''
+            ).trim();
+          } else {
+            ts = m[0];
+          }
+        }
+      } catch (e) {}
     }
 
     // 3. Estrazione Message
     if (parser.message?.pattern) {
-      const m = line.match(new RegExp(parser.message.pattern));
-      msg = m ? m[1] : line.replace(dockerTsRegex, '');
+      try {
+        const re = new RegExp(parser.message.pattern);
+        const m = originalLine.match(re);
+
+        if (m) {
+          msg = m[1] || m[0];
+        }
+      } catch (e) {
+        msg = originalLine;
+      }
     } else {
-      msg = line;
-      msg = msg.replace(dockerTsRegex, ''); // Togle Docker Timestamp
-      
+      msg = originalLine;
+
+      // rimuovo timestamp trovato
       if (parser.timestamp?.pattern) {
-        msg = msg.replace(new RegExp(parser.timestamp.pattern), '');
+        try {
+          msg = msg.replace(
+            new RegExp(parser.timestamp.pattern),
+            ''
+          );
+        } catch (e) {}
       }
+
+      // rimuovo level trovato
       if (parser.level?.pattern) {
-        msg = msg.replace(new RegExp(parser.level.pattern), '');
+        try {
+          msg = msg.replace(
+            new RegExp(parser.level.pattern),
+            ''
+          );
+        } catch (e) {}
       }
+
+      msg = msg
+        .replace(/^[\s:\|\-\[\]>]+/, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
     }
 
     // Pulizia finale dei caratteri di scarto sul messaggio formattato
