@@ -699,10 +699,10 @@ option {
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
-.compose-tbl th.c-name    { width: 24%; text-align: left; }
-.compose-tbl th.c-status  { width: 14%; text-align: center; }
-.compose-tbl th.c-ports   { width: 26%; text-align: center; }
-.compose-tbl th.c-actions { width: 36%; text-align: right; }
+.compose-tbl th.c-name    { width: 28%; text-align: left; }
+.compose-tbl th.c-status  { width: 10%; text-align: center; }
+.compose-tbl th.c-ports   { width: 32%; text-align: center; }
+.compose-tbl th.c-actions { width: 30%; text-align: right; }
 .compose-tbl td {
   font-size: 11px;
   padding: 7px 16px;
@@ -784,7 +784,7 @@ option {
   justify-content: flex-end;
 }
 
-@media (max-width: 1000px) {
+/* @media (max-width: 1000px) {
   .btn-row { width: 100%; margin-top: 1px;}
   .btn-row .btn-icon  { font-size: 14px; }
   .btn-row .btn-label { font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -798,6 +798,40 @@ option {
   .compose-tbl th.c-actions { width: 30%; }
 
   .row-actions { flex-direction: column; align-items: stretch; gap: 3px; }
+} */
+
+@media (max-width: 1000px) {
+  /* Nascondi header tabella, trasforma in card layout */
+  .compose-tbl thead { display: none; }
+  .compose-tbl tbody { display: flex; flex-direction: column; gap: 0; }
+  .compose-tbl tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "name status"
+      "ports ports"
+      "actions actions";
+    gap: 4px 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .compose-tbl td { padding: 0; border: none; }
+  .compose-tbl td.c-name    { grid-area: name; align-self: center; font-size: 12px; }
+  .compose-tbl td.c-status  { grid-area: status; align-self: center; display: block !important; text-align: right; }
+  .compose-tbl td.c-ports   { grid-area: ports; display: block !important; font-size: 10px; color: var(--text-dim); }
+  .compose-tbl td.c-actions { grid-area: actions; }
+  .row-actions {
+    flex-direction: row;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  .btn-row {
+    width: auto;
+    flex: 1;
+    margin-top: 0;
+    height: 28px;
+    font-size: 10px;
+  }
 }
 
 /* ── Log viewer ────────────────────────────────────────────── */
