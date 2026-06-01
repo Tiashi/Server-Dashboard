@@ -145,52 +145,44 @@ const formatLogs = (() => {
 
     if (!line.trim()) return '';
 
-    // DEBUG
-    console.log('RAW:', JSON.stringify(line));
-    console.log('PARSER:', parser?.level?.pattern);
-
     let ts = '', msg = line, level = '', levelCls = '';
 
     if (parser) {
-      // Messaggio specifico (es. Navidrome msg="...")
       if (parser.message?.pattern) {
         const m = line.match(new RegExp(parser.message.pattern));
-        if (m) msg = m[1];
-      }
-
-      // Timestamp
-      if (parser.timestamp?.pattern) {
-        const m = line.match(new RegExp(parser.timestamp.pattern));
-        if (m) {
-          ts = parser.timestamp.format
-            .replace('$1', m[1] || '')
-            .replace('$2', m[2] || '')
-            .replace('$3', m[3] || '')
-            .replace('$4', m[4] || '')
-            .trim();
-          if (!parser.message?.pattern)
+        if (m) { msg = m[1]; }
+      } else {
+        // Rimuovi timestamp da msg
+        if (parser.timestamp?.pattern) {
+          const m = msg.match(new RegExp(parser.timestamp.pattern));
+          if (m) {
+            ts = parser.timestamp.format
+              .replace('$1', m[1] || '').replace('$2', m[2] || '')
+              .replace('$3', m[3] || '').replace('$4', m[4] || '').trim();
             msg = msg.replace(new RegExp(parser.timestamp.pattern), '').trim();
+          }
         }
-      }
 
-      // Livello — se remove_match toglie l'intera match dal messaggio
-      if (parser.level?.pattern) {
-        const m = line.match(new RegExp(parser.level.pattern));
-        if (m) {
-          const r = _levelFromWord(m[parser.level.group || 1]);
-          level = r.label; levelCls = r.cls;
-          if (!parser.message?.pattern) {
-            if (parser.level.remove_match) {
-              msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-            } else {
-              msg = msg.replace(new RegExp(parser.level.pattern), '').trim();
-            }
+        // Rimuovi livello da msg — ora msg NON contiene più il timestamp
+        if (parser.level?.pattern) {
+          // Cerca il livello nella riga originale (per estrarre il gruppo corretto)
+          const mOrig = line.match(new RegExp(parser.level.pattern));
+          if (mOrig) {
+            const r = _levelFromWord(mOrig[parser.level.group || 1]);
+            level = r.label; levelCls = r.cls;
+          }
+          // Rimuovi da msg usando solo la parola del livello estratta
+          if (level) {
+            msg = msg.replace(new RegExp(`^\\s*${level}\\s*`, 'i'), '').trim();
+            // fallback: rimuovi qualsiasi parola maiuscola sola all'inizio
+            msg = msg.replace(/^[A-Z]{2,5}\s+/, '').trim();
           }
         }
       }
     }
 
     msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+    if (!ts && !level && !msg) return '';
     return _renderLine(ts, level, msg, levelCls);
   }
 

@@ -7,13 +7,12 @@
       "format": "$1 $2"
     },
     "level": {
-      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z\\s+([A-Z]{3})\\s",
-      "group": 3,
-      "remove_match": true
+      "pattern": "T\\d{2}:\\d{2}:\\d{2}Z\\s+([A-Z]{3})\\s",
+      "group": 1
     }
   },
   "adguard": {
-    "containers": ["adguardhome", "adguard"],
+    "containers": ["adguard"],
     "strip_ansi": false,
     "timestamp": {
       "pattern": "(\\d{4})\\/(\\d{2})\\/(\\d{2}) (\\d{2}:\\d{2}:\\d{2})\\.\\d+",
@@ -21,8 +20,7 @@
     },
     "level": {
       "pattern": "\\[(\\w+)\\]",
-      "group": 1,
-      "remove_match": true
+      "group": 1
     }
   },
   "navidrome": {
@@ -34,8 +32,7 @@
     },
     "level": {
       "pattern": "level=(\\S+)",
-      "group": 1,
-      "remove_match": true
+      "group": 1
     },
     "message": {
       "pattern": "msg=\"([^\"]*)\""
@@ -49,9 +46,8 @@
       "format": "$1 $2"
     },
     "level": {
-      "pattern": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})Z?\\s+([A-Z]+)\\s",
-      "group": 3,
-      "remove_match": true
+      "pattern": "T\\d{2}:\\d{2}:\\d{2}Z?\\s+([A-Z]+)\\s",
+      "group": 1
     }
   }
 }
