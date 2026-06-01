@@ -786,61 +786,33 @@ option {
 }
 
 @media (max-width: 1000px) {
-  .compose-tbl thead { display: none; }
-  .compose-tbl tbody { display: flex; flex-direction: column; }
-
-  .compose-tbl tr {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    grid-template-areas:
-      "name status actions"
-      "ports ports ports";
-    gap: 4px 8px;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-  }
-
-  .compose-tbl td { padding: 0; border: none; }
-
-  .compose-tbl td.c-name {
-    grid-area: name;
-    font-size: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-  }
-  .compose-tbl td.c-status {
-    grid-area: status;
-    display: block !important;
-    text-align: center;
-  }
-  .compose-tbl td.c-ports {
-    grid-area: ports;
-    display: block !important;
-    font-size: 10px;
-    color: var(--text-dim);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .compose-tbl td.c-actions {
-    grid-area: actions;
-  }
-
-  .row-actions {
-    flex-direction: row;
-    gap: 4px;
-  }
+  
   .btn-row {
     width: 72px;
     flex-shrink: 0;
     margin-top: 0;
-    height: 26px;
-    padding: 0;
+    height: 28px;
+    padding: 0 8px;
     font-size: 10px;
   }
+  .compose-tbl thead { display: none; }
+  .compose-tbl tbody { display: flex; flex-direction: column; }
+
+  .compose-tbl tr {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compose-tbl td { padding: 0; border: none; }
+  .compose-tbl td.c-name    { flex: 1; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .compose-tbl td.c-status  { display: block !important; flex-shrink: 0; }
+  .compose-tbl td.c-ports   { display: none !important; }
+  .compose-tbl td.c-actions { flex-shrink: 0; }
+
+  .row-actions { flex-direction: row; gap: 4px; }
 }
 /* ── Log viewer ────────────────────────────────────────────── */
 .log-output-box { width: 1600px; }
