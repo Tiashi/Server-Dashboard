@@ -317,6 +317,7 @@ body { display: flex; flex-direction: column; }
 .badge-green  { background: rgba(78,205,196,.12); color: var(--teal);  border: 1px solid var(--teal-dim); }
 .badge-red    { background: rgba(224,80,80,.1);   color: var(--red);   border: 1px solid #7a2020; }
 .badge-yellow { background: rgba(232,168,56,.1);  color: var(--amber); border: 1px solid var(--amber-dim); }
+.badge-mobile { display: none; }
 
 /* ── Buttons ───────────────────────────────────────────────── */
 .btn {
@@ -785,6 +786,8 @@ option {
   justify-content: flex-end;
 }
 
+
+
 @media (max-width: 1000px) {
   .btn-row {
     width: 72px;
@@ -822,17 +825,12 @@ option {
   .compose-tbl td { padding: 0; border: none; }
 
   .compose-tbl td.c-name {
-    grid-area: name;
-    font-size: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
   .compose-tbl td.c-status {
-    grid-area: status;
-    display: block !important;
-    text-align: left;
+    display: none !important;
   }
   .compose-tbl td.c-ports {
     grid-area: ports;
@@ -849,6 +847,20 @@ option {
     grid-area: actions;
   }
   
+
+  .badge-mobile  { display: inline-block; }
+  .badge-desktop { display: none; }
+
+  .compose-tbl tr {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "name actions"
+      "ports ports";
+  }
+  .compose-tbl tr.no-ports {
+    grid-template-areas: "name actions";
+  }
+
 
   .row-actions {
     flex-direction: row;
