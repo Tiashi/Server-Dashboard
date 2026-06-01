@@ -795,5 +795,6 @@ option {
   .compose-tbl td.c-ports { display: none; }
   .compose-tbl th.c-name    { width: 35%; }
   .compose-tbl th.c-status  { width: 20%; }
-  .compose-tbl th.c-actions { width: 45%; }
+  .compose-tbl th.c-actions { width: 50%; }
+  .row-actions { gap: 3px; }
 }
