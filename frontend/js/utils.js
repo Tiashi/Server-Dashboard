@@ -145,6 +145,10 @@ const formatLogs = (() => {
 
     if (!line.trim()) return '';
 
+    // DEBUG
+    console.log('RAW:', JSON.stringify(line));
+    console.log('PARSER:', parser?.level?.pattern);
+
     let ts = '', msg = line, level = '', levelCls = '';
 
     if (parser) {
