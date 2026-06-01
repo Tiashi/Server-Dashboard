@@ -1,5 +1,6 @@
 import subprocess
 import re
+import yaml
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -60,27 +61,14 @@ def _run_compose(app: str, *args, timeout: int = 120) -> str:
     return output
 
 def _parse_images(app: str) -> list[dict]:
-    """Legge il docker-compose.yaml e restituisce le immagini con tag."""
-    import yaml
     compose_file = _compose_path(app)
-    try:
-        import yaml
-    except ImportError:
-        raise HTTPException(500, "PyYAML non installato (pip install pyyaml)")
-    
-    content = compose_file.read_text()
-    data = yaml.safe_load(content)
-    services = data.get("services", {})
-    
+    data = yaml.safe_load(compose_file.read_text())
     result = []
-    for svc_name, svc in services.items():
+    for svc_name, svc in (data.get("services") or {}).items():
         image = svc.get("image")
         if not image:
             continue
-        if ":" in image:
-            repo, tag = image.rsplit(":", 1)
-        else:
-            repo, tag = image, "latest"
+        repo, tag = image.rsplit(":", 1) if ":" in image else (image, "latest")
         result.append({"service": svc_name, "image": image, "repo": repo, "tag": tag})
     return result
 

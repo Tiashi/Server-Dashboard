@@ -100,149 +100,9 @@ async function loadDocker() {
     }
   });
 
-  _injectComposeStyle();
   renderComposeList();
   renderImages();
   renderNetworks();
-}
-
-// ── STYLE ─────────────────────────────────────────────────────
-function _injectComposeStyle() {
-  if (document.getElementById('compose-style')) return;
-  const s = document.createElement('style');
-  s.id = 'compose-style';
-  s.textContent = `
-    .compose-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .compose-block {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .compose-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .compose-header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .compose-stack-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .compose-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--text-dim);
-    }
-    .compose-dot.dot-green  { background: var(--teal); }
-    .compose-dot.dot-yellow { background: var(--amber); }
-    .compose-dot.dot-red    { background: var(--red); }
-    .compose-tbl {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    .compose-tbl th {
-      font-size: 9px;
-      color: var(--text-dim);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 600;
-      padding: 7px 16px 6px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .compose-tbl th.c-name    { width: 30%; text-align: left; }
-    .compose-tbl th.c-status  { width: 14%; text-align: center; }
-    .compose-tbl th.c-ports   { width: 18%; text-align: center; }
-    .compose-tbl th.c-actions { width: 38%; text-align: right; }
-    .compose-tbl td {
-      font-size: 11px;
-      padding: 7px 16px;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--bg3);
-    }
-    .compose-tbl tr:last-child td { border-bottom: none; }
-    .compose-tbl td.c-name    { color: #fff; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .compose-tbl td.c-status  { text-align: center; }
-    .compose-tbl td.c-ports   { text-align: center; color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .compose-tbl td.c-actions { text-align: right; }
-    .compose-footer {
-      padding: 10px 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .compose-footer-left  { display: flex; gap: 6px; }
-    .compose-footer-right { display: flex; gap: 6px; }
-    .btn-compose {
-      width: 64px;
-      padding: 5px 0;
-      text-align: center;
-      border-radius: var(--radius);
-      font-size: 11px;
-      border: 1px solid var(--border);
-      background: var(--bg3);
-      color: var(--text);
-      cursor: pointer;
-      font-family: var(--font-mono);
-      white-space: nowrap;
-      letter-spacing: .3px;
-    }
-    .btn-compose:hover { background: var(--border); }
-    .btn-compose.c-green { border-color: var(--teal-dim); color: var(--teal); }
-    .btn-compose.c-green:hover { background: rgba(78,205,196,.1); }
-    .btn-compose.c-red { border-color: #7a2020; color: var(--red); }
-    .btn-compose.c-red:hover { background: rgba(224,80,80,.1); }
-    .btn-row {
-      width: 64px;
-      padding: 4px 0;
-      text-align: center;
-      border-radius: var(--radius);
-      font-size: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg3);
-      color: var(--text);
-      cursor: pointer;
-      font-family: var(--font-mono);
-      white-space: nowrap;
-    }
-    .btn-row:hover { background: var(--border); }
-    .btn-row.r-green { border-color: var(--teal-dim); color: var(--teal); }
-    .btn-row.r-green:hover { background: rgba(78,205,196,.1); }
-    .btn-row.r-red { border-color: #7a2020; color: var(--red); }
-    .btn-row.r-red:hover { background: rgba(224,80,80,.1); }
-    .btn-row.r-amber { border-color: var(--amber-dim); color: var(--amber); }
-    .btn-row.r-amber:hover { background: rgba(232,168,56,.1); }
-    .row-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
-    .compose-empty { padding: 14px 16px; color: var(--text-dim); font-size: 11px; }
-
-    @media (max-width: 820px) {
-      .compose-tbl th.c-ports,
-      .compose-tbl td.c-ports { display: none; }
-      .compose-tbl th.c-name    { width: 35%; }
-      .compose-tbl th.c-status  { width: 20%; }
-      .compose-tbl th.c-actions { width: 45%; }
-    }
-  `;
-  document.head.appendChild(s);
 }
 
 // ── COMPOSE LIST ──────────────────────────────────────────────
@@ -279,11 +139,10 @@ async function renderComposeList() {
         </div>
         <div class="compose-footer">
           <div class="compose-footer-left">
-            <button class="btn-compose c-green" data-action="up"   data-stack="${s.name}">▲ Up</button>
+            <button class="btn-compose c-green" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
+            <div class="compose-footer-divider"></div>
+            <button class="btn-compose c-teal"  data-action="up"   data-stack="${s.name}">▲ Up</button>
             <button class="btn-compose c-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
-          </div>
-          <div class="compose-footer-right">
-            <button class="btn-compose" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
           </div>
         </div>
       </div>
