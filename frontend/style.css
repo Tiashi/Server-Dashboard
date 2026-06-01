@@ -752,7 +752,7 @@ option {
 
 .btn-row {
   width: 72px;
-  height: 32px;
+  height: 26px;
   padding: 0;
   text-align: center;
   border-radius: var(--radius);
@@ -776,18 +776,16 @@ option {
 .btn-row.r-amber      { border-color: var(--amber-dim); color: var(--amber); }
 .btn-row.r-amber:hover{ background: rgba(232,168,56,.1); }
 
-.row-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+.row-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+}
 
 @media (max-width: 820px) {
-  .btn-row {
-    width: 52px;
-    height: 52px;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 9px;
-    white-space: normal;
-    line-height: 1.2;
-  }
+  .btn-row { width: 100%; }
   .btn-row .btn-icon  { font-size: 14px; }
   .btn-row .btn-label { font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
 
@@ -795,6 +793,6 @@ option {
   .compose-tbl td.c-ports { display: none; }
   .compose-tbl th.c-name    { width: 35%; }
   .compose-tbl th.c-status  { width: 20%; }
-  .compose-tbl th.c-actions { width: 50%; }
-  .row-actions { gap: 3px; }
+  .compose-tbl th.c-actions { width: 30%; }
+  .row-actions { flex-direction: column; align-items: stretch; gap: 3px; }
 }

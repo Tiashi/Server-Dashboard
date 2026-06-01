@@ -212,12 +212,8 @@ async function loadStackStatus(name) {
         .join(', ') || '—';
 
       const toggleBtn = isRunning
-        ? `<button class="btn-row r-red"   data-action="stop"  data-stack="${name}" data-container="${c.name}">
-            <span class="btn-icon">■</span><span class="btn-label">Stop</span>
-          </button>`
-        : `<button class="btn-row r-green" data-action="start" data-stack="${name}" data-container="${c.name}">
-            <span class="btn-icon">▶</span><span class="btn-label">Start</span>
-          </button>`;
+        ? `<button class="btn-row r-red"   data-action="stop"  data-stack="${name}" data-container="${c.name}">■ Stop</button>`
+        : `<button class="btn-row r-green" data-action="start" data-stack="${name}" data-container="${c.name}">▶ Start</button>`;
 
       return `<tr>
         <td class="c-name">${c.name}</td>
@@ -226,12 +222,8 @@ async function loadStackStatus(name) {
         <td class="c-actions">
           <div class="row-actions">
             ${toggleBtn}
-            <button class="btn-row" data-action="logs" data-stack="${name}" data-container="${c.name}">
-              <span class="btn-icon">📄</span><span class="btn-label">Logs</span>
-            </button>
-            <button class="btn-row r-amber" data-action="update-image" data-stack="${name}" data-container="${c.name}">
-              <span class="btn-icon">🏷</span><span class="btn-label">Image</span>
-            </button>
+            <button class="btn-row" data-action="logs" data-stack="${name}" data-container="${c.name}">📄 Logs</button>
+            <button class="btn-row r-amber" data-action="update-image" data-stack="${name}" data-container="${c.name}">🏷 Image</button>
           </div>
         </td>
       </tr>`;
