@@ -140,92 +140,46 @@ const formatLogs = (() => {
 
     // Rimozione timestamp docker e strip_ansi
     line = line.replace(/\x1b\[[0-9;]*m/g, '');
-    // line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
+    line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
     if (!line.trim()) return '';
     if (!parser) return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
 
     // Creo le variabili da stampare
     let ts = '', msg = line, level = '', levelCls = '';
-    
-    const originalLine = line;
+
+    let levelMatch = null, timestampMatch = null;
 
     // 1. Estrazione Level
     if (parser.level?.pattern) {
-      try {
-        const re = new RegExp(parser.level.pattern);
-        const m = originalLine.match(re);
-
-        if (m) {
-          const group = parser.level.group ?? 1;
-          const r = _levelFromWord(m[group] || '');
-          level = r.label;
-          levelCls = r.cls;
-        }
-      } catch (e) {}
+      const m = line.match(new RegExp(parser.level.pattern));
+      if (m) {
+        levelMatch = m[0];
+        const r = _levelFromWord(m[parser.level.group || 1]);
+        level = r.label;
+        levelCls = r.cls;
+      }
     }
 
     // 2. Estrazione Timestamp
     if (parser.timestamp?.pattern) {
-      try {
-        const re = new RegExp(parser.timestamp.pattern);
-        const m = originalLine.match(re);
-
-        if (m) {
-          if (parser.timestamp.format) {
-            ts = parser.timestamp.format.replace(
-              /\$(\d+)/g,
-              (_, idx) => m[Number(idx)] || ''
-            ).trim();
-          } else {
-            ts = m[0];
-          }
-        }
-      } catch (e) {}
+      const m = line.match(new RegExp(parser.timestamp.pattern));
+      if (m) {
+        timestampMatch = m[0];
+        ts = parser.timestamp.format ? parser.timestamp.format.replace(/\$(\d+)/g, (_, n) => m[n] || ''): m[0];
+      }
     }
 
     // 3. Estrazione Message
     if (parser.message?.pattern) {
-      try {
-        const re = new RegExp(parser.message.pattern);
-        const m = originalLine.match(re);
-
-        if (m) {
-          msg = m[1] || m[0];
-        }
-      } catch (e) {
-        msg = originalLine;
-      }
+      const m = line.match(new RegExp(parser.message.pattern));
+      if (m) msg = m[1] || m[0];
     } else {
-      msg = originalLine;
-
-      // rimuovo timestamp trovato
-      if (parser.timestamp?.pattern) {
-        try {
-          msg = msg.replace(
-            new RegExp(parser.timestamp.pattern),
-            ''
-          );
-        } catch (e) {}
-      }
-
-      // rimuovo level trovato
-      if (parser.level?.pattern) {
-        try {
-          msg = msg.replace(
-            new RegExp(parser.level.pattern),
-            ''
-          );
-        } catch (e) {}
-      }
-
-      msg = msg
-        .replace(/^[\s:\|\-\[\]>]+/, '')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
+      msg = line;
+      if (timestampMatch) msg = msg.replace(timestampMatch, '');
+      if (levelMatch) msg = msg.replace(levelMatch, '');
+      msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
     }
-
-    // Pulizia finale dei caratteri di scarto sul messaggio formattato
-    // msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
+    
     return _renderLine(ts, level, msg, levelCls);
   }
 
