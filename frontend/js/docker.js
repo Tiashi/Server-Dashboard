@@ -399,11 +399,10 @@ function openOutputModal(stack, action, output) {
 
 // ── CONTAINER LOGS MODAL ──────────────────────────────────────
 async function openContainerLogsModal(containerName) {
-  const modal   = document.getElementById('log-modal');
-  const titleEl = document.getElementById('log-title');
-  const content = document.getElementById('log-content');
-  modal.querySelector('.update-image-form')?.remove();
-  content.style.display = '';
+  const modal   = document.getElementById('log-output-modal');
+  const titleEl = document.getElementById('log-output-title');
+  const content = document.getElementById('log-output-content');
+
   titleEl.textContent = `Logs — ${containerName}`;
   content.textContent = 'Caricamento...';
   modal.classList.remove('hidden');
@@ -419,7 +418,7 @@ async function openContainerLogsModal(containerName) {
     content.textContent = `Errore: ${e.message}`;
   }
 
-  document.getElementById('log-close').onclick = () => modal.classList.add('hidden');
+  document.getElementById('log-output-close').onclick = () => modal.classList.add('hidden');
 }
 
 // ── IMMAGINI ──────────────────────────────────────────────────
