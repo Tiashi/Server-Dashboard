@@ -762,6 +762,9 @@ option {
   cursor: pointer;
   font-family: var(--font-mono);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-row:hover        { background: var(--border); }
 .btn-row.r-green      { border-color: var(--teal-dim); color: var(--teal); }

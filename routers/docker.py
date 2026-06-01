@@ -153,8 +153,7 @@ def list_stacks():
 def stack_status(app: str):
     """Restituisce i container dello stack con il loro stato."""
     try:
-        output = _run_compose(app, "ps", "--format", "json")
-        # docker compose ps --format json può restituire un json per riga
+        output = _run_compose(app, "ps", "--all", "--format", "json")
         import json
         containers = []
         for line in output.strip().splitlines():

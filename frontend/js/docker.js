@@ -138,12 +138,12 @@ async function renderComposeList() {
           <div class="empty-state" style="padding:20px"><div class="spinner"></div></div>
         </div>
         <div class="compose-footer">
-          <div class="compose-footer-left">
-            <button class="btn-compose c-green" data-action="pull" data-stack="${s.name}">⬇ Pull</button>
-            <div class="compose-footer-divider"></div>
-            <button class="btn-compose c-green"  data-action="up"   data-stack="${s.name}">▲ Up</button>
-            <button class="btn-compose c-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
-          </div>
+          <div class="compose-footer">
+          <button class="btn-compose c-green" data-action="up"   data-stack="${s.name}">▲ Up</button>
+          <button class="btn-compose c-red"   data-action="down" data-stack="${s.name}">▼ Down</button>
+          <div class="compose-footer-divider"></div>
+          <button class="btn-compose"         data-action="pull" data-stack="${s.name}">⬇ Pull</button>
+        </div>
         </div>
       </div>
     `).join('')}
