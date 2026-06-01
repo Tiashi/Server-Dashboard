@@ -421,48 +421,6 @@ async function openContainerLogsModal(containerName) {
   document.getElementById('log-output-close').onclick = () => modal.classList.add('hidden');
 }
 
-function formatLogs(raw) {
-  if (!raw) return '<span style="color:var(--text-dim)">(nessun log)</span>';
-
-  return raw.split('\n').filter(l => l.trim()).map(line => {
-    // Rimuovi timestamp Docker iniziale
-    line = line.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s*/, '');
-
-    // Estrai timestamp interno
-    let ts = '';
-    line = line.replace(
-      /(\d{4})[\/\-](\d{2})[\/\-](\d{2})\s+(\d{2}:\d{2}:\d{2})[\.\d]*/,
-      (_, y, mo, d, t) => { ts = `${y}-${mo}-${d} ${t}`; return ''; }
-    );
-
-    // Estrai livello log
-    let level = '';
-    let levelCls = '';
-    const levelMap = [
-      { re: /\b(ERROR|ERR|FATAL|CRITICAL|CRIT)\b/i, label: 'ERR', cls: 'log-err' },
-      { re: /\b(WARN|WARNING)\b/i,                   label: 'WAR', cls: 'log-war' },
-      { re: /\b(INFO|NOTICE)\b/i,                    label: 'INF', cls: 'log-inf' },
-      { re: /\b(DEBUG|TRACE)\b/i,                    label: 'DBG', cls: 'log-dbg' },
-    ];
-    for (const { re, label, cls } of levelMap) {
-      if (re.test(line)) {
-        level = label;
-        levelCls = cls;
-        line = line.replace(re, '');
-        break;
-      }
-    }
-
-    // Pulisci spazi/punteggiatura residua a inizio riga
-    line = line.replace(/^[\s:\|\-\[\]]+/, '').trim();
-
-    const tsHtml    = ts    ? `<span class="log-ts">${ts}</span>` : '';
-    const levelHtml = level ? `<span class="log-lv ${levelCls}">${level}</span>` : '';
-    
-    return `<div class="log-line">${tsHtml}${levelHtml}<span class="log-msg">${line}</span></div>`;
-  }).join('');
-}
-
 // ── IMMAGINI ──────────────────────────────────────────────────
 async function renderImages() {
   const body = document.getElementById('images-body');
