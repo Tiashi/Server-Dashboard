@@ -801,9 +801,9 @@ option {
 
   .compose-tbl tr {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto auto;
     grid-template-areas:
-      "status name actions"
+      "name status actions"
       "ports ports ports";
     column-gap: 8px;
     row-gap: 0;
