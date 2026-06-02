@@ -485,22 +485,31 @@ async function renderNetworks() {
   }
   body.innerHTML = networks.map(net => `
     <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div style="display:flex;align-items:center;gap:10px">
-          <strong style="color:#fff">${net.name}</strong>
+          <strong style="color:#fff;font-size:13px">${net.name}</strong>
           <span class="badge badge-yellow">${net.driver}</span>
         </div>
-        <span style="font-size:11px;color:var(--teal)">${net.subnet}</span>
+        <span style="font-size:11px;color:var(--teal);font-family:var(--font-mono)">${net.subnet}</span>
       </div>
-      ${net.containers.length
-        ? `<div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${net.containers.length ? `
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;font-weight:600;padding:4px 8px;text-align:left;border-bottom:1px solid var(--border)">Container</th>
+              <th style="font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;font-weight:600;padding:4px 8px;text-align:right;border-bottom:1px solid var(--border)">IP</th>
+            </tr>
+          </thead>
+          <tbody>
             ${net.containers.map(c => `
-              <span style="font-size:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:2px 8px">
-                ${c.name} <span style="color:var(--text-dim)">${c.ipv4}</span>
-              </span>`).join('')}
-          </div>`
-        : `<span style="font-size:11px;color:var(--text-dim)">Nessun container collegato</span>`
-      }
+              <tr>
+                <td style="padding:6px 8px;font-size:11px;color:#fff;border-bottom:1px solid var(--bg3)">${c.name}</td>
+                <td style="padding:6px 8px;font-size:11px;color:var(--teal);font-family:var(--font-mono);text-align:right;border-bottom:1px solid var(--bg3)">${c.ipv4.replace('/\d+$/', '') || '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      ` : `<div style="font-size:11px;color:var(--text-dim)">Nessun container collegato</div>`}
     </div>
   `).join('');
 }
