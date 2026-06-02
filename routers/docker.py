@@ -294,10 +294,11 @@ def list_networks():
     for net in _client().networks.list():
         net.reload()
         containers = [
-            {"name": c.get("Name", ""), "ipv4": c.get("IPv4Address", "—")}
+            { "name": c.get("Name", ""), "ipv4": c.get("IPv4Address", "—") }
             for c in (net.attrs.get("Containers") or {}).values()
         ]
         ipam = net.attrs.get("IPAM", {}).get("Config") or [{}]
+        print(ipam, net)
         result.append({
             "id":         net.id[:12],
             "name":       net.name,
