@@ -496,8 +496,10 @@ async function renderNetworks() {
           <strong style="color:#fff;font-size:13px">${net.name}</strong>
           <span class="badge badge-yellow">${net.driver}</span>
         </div>
-        <span style="font-size:11px;color:var(--teal);font-family:var(--font-mono)">${net.subnet}</span>
-        <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">gw: ${net.gateway}</span>
+        <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">
+          <span style="color:var(--teal)">${net.subnet}</span>
+          &nbsp;·&nbsp;gw: ${net.gateway}
+        </span>
       </div>
       ${net.containers.length ? `
         <table style="width:100%;border-collapse:collapse">
@@ -520,3 +522,4 @@ async function renderNetworks() {
     </div>
   `).join('');
 }
+
