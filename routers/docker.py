@@ -124,12 +124,6 @@ def get_log_parsers():
     import json as _json
     return _json.loads(path.read_text())
 
-@router.post("/log-parsers")
-def save_log_parsers(data: dict = Body(...)):
-    path = Path("config/docker_logs.json")
-    path.write_text(_json.dumps(data, indent=2))
-    return {"ok": True}
-
 # ══════════════════════════════════════════════════════════════
 # COMPOSE SETTINGS
 # ══════════════════════════════════════════════════════════════
