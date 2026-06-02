@@ -56,6 +56,16 @@ async function loadDocker() {
           </div>
         </div>
       </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-header">
+          <span>Log Parsers</span>
+          <button class="btn btn-green" id="log-parsers-save">✓ Salva</button>
+        </div>
+        <div style="padding:16px">
+          <textarea id="log-parsers-editor" style="width:100%;height:300px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:11px;padding:10px;resize:vertical;line-height:1.6"></textarea>
+          <div id="log-parsers-msg" style="font-size:11px;margin-top:8px"></div>
+        </div>
+      </div>
     </div>
   `;
 
@@ -83,6 +93,26 @@ async function loadDocker() {
     const s = await GET('/docker/compose/settings');
     document.getElementById('compose-base-dir').value = s.base_dir || '';
   } catch(e) {}
+
+  try {
+    const parsers = await GET('/docker/log-parsers');
+    document.getElementById('log-parsers-editor').value = JSON.stringify(parsers, null, 2);
+  } catch(e) {}
+
+  document.getElementById('log-parsers-save').addEventListener('click', async () => {
+    const msg = document.getElementById('log-parsers-msg');
+    const raw = document.getElementById('log-parsers-editor').value.trim();
+    try {
+      const parsed = JSON.parse(raw);
+      await POST('/docker/log-parsers', parsed);
+      msg.style.color = 'var(--teal)';
+      msg.textContent = '✓ Salvato';
+      setTimeout(() => msg.textContent = '', 2000);
+    } catch(e) {
+      msg.style.color = 'var(--red)';
+      msg.textContent = `✕ ${e.message}`;
+    }
+  });
 
   document.getElementById('compose-dir-save').addEventListener('click', async () => {
     const dir = document.getElementById('compose-base-dir').value.trim();
