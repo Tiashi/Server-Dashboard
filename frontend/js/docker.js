@@ -496,9 +496,9 @@ async function renderNetworks() {
           <strong style="color:#fff;font-size:13px">${net.name}</strong>
           <span class="badge badge-yellow">${net.driver}</span>
         </div>
-        <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">
-          <span style="color:var(--teal)">${net.subnet}</span>
-          &nbsp;·&nbsp;gw: ${net.gateway}
+        <span style="font-size:11px;font-family:var(--font-mono)">
+          <span style="color:var(--text-dim)">subnet </span><span style="color:var(--teal)">${net.subnet}</span>
+          ${net.gateway !== '—' ? `&nbsp;·&nbsp;<span style="color:var(--text-dim)">gw </span><span style="color:var(--teal)">${net.gateway}</span>` : ''}
         </span>
       </div>
       ${net.containers.length ? `

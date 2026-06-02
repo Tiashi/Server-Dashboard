@@ -298,7 +298,6 @@ def list_networks():
             for c in (net.attrs.get("Containers") or {}).values()
         ]
         ipam = net.attrs.get("IPAM", {}).get("Config") or [{}]
-        print(ipam, net)
         result.append({
             "id":         net.id[:12],
             "name":       net.name,
