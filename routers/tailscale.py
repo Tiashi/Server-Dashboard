@@ -1,4 +1,3 @@
-import re
 import httpx
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel

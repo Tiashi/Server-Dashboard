@@ -1,7 +1,7 @@
 async function loadTailscale() {
   const el = document.getElementById('page-tailscale');
   el.innerHTML = `
-    <div class="page-title">VPN / Hosts</div>
+    <div class="page-title">Headscale</div>
     <div class="page-subtitle">GESTIONE HEADSCALE</div>
 
     <div class="tab-nav">

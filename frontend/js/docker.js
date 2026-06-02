@@ -513,7 +513,7 @@ async function renderNetworks() {
             ${net.containers.map(c => `
               <tr>
                 <td style="padding:6px 8px;font-size:11px;color:#fff;border-bottom:1px solid var(--bg3)">${c.name}</td>
-                <td style="padding:6px 8px;font-size:11px;color:var(--teal);font-family:var(--font-mono);text-align:right;border-bottom:1px solid var(--bg3)">${c.ipv4.replace('/\d+$/', '') || '—'}</td>
+                <td style="padding:6px 8px;font-size:11px;color:var(--teal);font-family:var(--font-mono);text-align:right;border-bottom:1px solid var(--bg3)">${c.ipv4.replace(/\/\d+$/, '') || '—'}</td>
               </tr>
             `).join('')}
           </tbody>

@@ -38,7 +38,3 @@ cfg = load()
 HEADSCALE_URL    = cfg["headscale"]["url"]
 HEADSCALE_APIKEY = cfg["headscale"]["api_key"]
 COMPOSE_BASE_DIR = cfg.get("compose", {}).get("base_dir", str(Path.home() / "docker"))
-
-# GLANCES_PORT     = cfg["glances"]["port"]
-# SERVER_HOST      = cfg["server"]["host"]
-# SERVER_PORT      = cfg["server"]["port"]

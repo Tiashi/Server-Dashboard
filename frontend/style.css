@@ -824,6 +824,7 @@ option {
   .compose-tbl td { padding: 0; border: none; }
 
   .compose-tbl td.c-name {
+    grid-area: name;
     display: flex;
     align-items: center;
     gap: 6px;

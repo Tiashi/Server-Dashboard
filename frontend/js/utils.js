@@ -99,7 +99,6 @@ function dlgSelect(title, message, options, defaultVal = '') {
 const sanitize = str => str.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
 
-
 const formatLogs = (() => {
   let _cache = null;
 
@@ -133,9 +132,6 @@ const formatLogs = (() => {
     return `<div class="log-line">${tsHtml}${lvHtml}<span class="log-msg">${msg}</span></div>`;
   }
 
-
-
-  
   function _parseLine(line, parser) {
 
     // Rimozione timestamp docker e strip_ansi
@@ -144,10 +140,8 @@ const formatLogs = (() => {
     if (!line.trim()) return '';
     if (!parser) return `<div class="log-line"><span class="log-msg">${line.trim()}</span></div>`;
 
-    // Creo le variabili da stampare
-    let ts = '', msg = line, level = '', levelCls = '';
-
-    let levelMatch = null, timestampMatch = null;
+    // Creo le variabili da stampare e d'appoggio
+    let ts = '', msg = '', level = '', levelCls = '', levelMatch = null, timestampMatch = null;
 
     // 1. Estrazione Level
     if (parser.level?.pattern) {
@@ -182,9 +176,9 @@ const formatLogs = (() => {
       msg = line;
       if (timestampMatch) msg = msg.replace(timestampMatch, '');
       if (levelMatch) msg = msg.replace(levelMatch, '');
-      msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
     }
 
+    msg = msg.replace(/^[\s:\|\-\[\]>]+/, '').trim();
     return _renderLine(ts, level, msg, levelCls);
   }
 

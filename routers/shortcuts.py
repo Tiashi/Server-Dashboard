@@ -1,4 +1,5 @@
 import json
+import uuid
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -28,7 +29,6 @@ def get_shortcuts():
 @router.post("")
 def add_shortcut(shortcut: Shortcut):
     data = load()
-    import uuid
     shortcut.id = str(uuid.uuid4())
     data.append(shortcut.model_dump())
     save(data)

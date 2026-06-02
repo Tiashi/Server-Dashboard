@@ -4,9 +4,6 @@ from datetime import datetime
 
 router = APIRouter()
 
-def fmt_bytes(b: int) -> int:
-    return b  # mandiamo i bytes raw, il frontend formatta
-
 @router.get("")
 def get_resources():
     # CPU
