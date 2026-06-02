@@ -475,6 +475,12 @@ async function renderNetworks() {
       const ipB = parseInt(b.subnet?.split('.')[2] ?? '999');
       return ipA - ipB;
     });
+    networks.forEach(net => {
+      net.containers.sort((a, b) => {
+        const toInt = ip => ip.replace(/\/\d+$/, '').split('.').reduce((acc, oct) => (acc << 8) + parseInt(oct), 0);
+        return toInt(a.ipv4) - toInt(b.ipv4);
+      });
+    });
   } catch(e) {
     body.innerHTML = `<div class="empty-state">Errore: ${e.message}</div>`;
     return;
@@ -491,6 +497,7 @@ async function renderNetworks() {
           <span class="badge badge-yellow">${net.driver}</span>
         </div>
         <span style="font-size:11px;color:var(--teal);font-family:var(--font-mono)">${net.subnet}</span>
+        <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">gw: ${net.gateway}</span>
       </div>
       ${net.containers.length ? `
         <table style="width:100%;border-collapse:collapse">

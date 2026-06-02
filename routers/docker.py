@@ -303,6 +303,7 @@ def list_networks():
             "name":       net.name,
             "driver":     net.attrs.get("Driver", ""),
             "subnet":     ipam[0].get("Subnet", "—"),
+            "gateway":    ipam[0].get("Gateway", "—"),
             "containers": containers,
         })
     return result
