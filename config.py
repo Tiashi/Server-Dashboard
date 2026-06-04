@@ -17,25 +17,10 @@ class Config:
         self.data = self._load()
 
     def _load(self) -> tomlkit.TOMLDocument:
-        if not self.path.exists():
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            doc = self._build_default()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        doc = tomlkit.parse(self.path.read_text()) if self.path.exists() else tomlkit.document()
+        if self._fill_missing(doc, DEFAULT_CONFIG):
             self.path.write_text(tomlkit.dumps(doc))
-            return doc
-
-        doc = tomlkit.parse(self.path.read_text())
-        changed = self._fill_missing(doc, DEFAULT_CONFIG)
-        if changed:
-            self.path.write_text(tomlkit.dumps(doc))
-        return doc
-
-    def _build_default(self) -> tomlkit.TOMLDocument:
-        doc = tomlkit.document()
-        for section, values in DEFAULT_CONFIG.items():
-            table = tomlkit.table()
-            for k, v in values.items():
-                table.add(k, v)
-            doc.add(section, table)
         return doc
 
     def _fill_missing(self, doc: tomlkit.TOMLDocument, defaults: dict) -> bool:
@@ -57,7 +42,7 @@ class Config:
     def _save(self) -> None:
         self.path.write_text(tomlkit.dumps(self.data))
 
-    def set(self, section: str, key: str, value) -> None:
+    def _set(self, section: str, key: str, value) -> None:
         if section not in self.data:
             table = tomlkit.table()
             self.data.add(section, table)
@@ -73,15 +58,15 @@ COMPOSE_BASE_DIR = cfg.data["compose"]["base_dir"]
 
 def update_api_key(new_key: str):
     global HEADSCALE_APIKEY
-    cfg.set("headscale", "api_key", new_key)
+    cfg._set("headscale", "api_key", new_key)
     HEADSCALE_APIKEY = new_key
 
 def update_headscale_url(new_url: str):
     global HEADSCALE_URL
-    cfg.set("headscale", "url", new_url)
+    cfg._set("headscale", "url", new_url)
     HEADSCALE_URL = new_url
 
 def update_compose_dir(new_dir: str):
     global COMPOSE_BASE_DIR
-    cfg.set("compose", "base_dir", new_dir)
+    cfg._set("compose", "base_dir", new_dir)
     COMPOSE_BASE_DIR = new_dir
