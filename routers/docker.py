@@ -238,10 +238,7 @@ def list_images():
         for img in _client().images.list()
     ]
 
-@router.post("/images/prune")
-def prune_images():
-    result = _client().images.prune(filters={"dangling": True})
-    return {"ok": True, "reclaimed": result.get("SpaceReclaimed", 0)}
+
 
 # ══════════════════════════════════════════════════════════════
 # RETI
@@ -266,3 +263,23 @@ def list_networks():
             "containers": containers,
         })
     return result
+
+
+# ══════════════════════════════════════════════════════════════
+# Purne Endpoint
+# ══════════════════════════════════════════════════════════════
+
+@router.post("/images/prune")
+def prune_images():
+    result = _client().images.prune(filters={"dangling": True})
+    return {"ok": True, "reclaimed": result.get("SpaceReclaimed", 0)}
+
+@router.post("/containers/prune")
+def prune_containers():
+    result = _client().containers.prune()
+    return {"ok": True, "reclaimed": result.get("SpaceReclaimed", 0), "count": len(result.get("ContainersDeleted") or [])}
+
+@router.post("/networks/prune")
+def prune_networks():
+    result = _client().networks.prune()
+    return {"ok": True, "count": len(result.get("NetworksDeleted") or [])}

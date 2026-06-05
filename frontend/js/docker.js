@@ -8,7 +8,7 @@ async function loadDocker() {
       <button class="tab-btn active" data-tab="compose">Compose</button>
       <button class="tab-btn" data-tab="images">Immagini</button>
       <button class="tab-btn" data-tab="networks">Reti</button>
-      <button class="tab-btn" data-tab="docker-settings">Impostazioni</button>
+      <button class="tab-btn" data-tab="docker-settings">Manutenzione</button>
     </div>
 
     <div id="tab-compose" class="tab-content active">
@@ -19,10 +19,7 @@ async function loadDocker() {
       <div class="panel" style="margin-top:16px">
         <div class="panel-header">
           <span>Immagini</span>
-          <div class="action-row">
-            <button class="btn btn-red" id="images-prune">🗑 Prune</button>
-            <button class="btn" id="images-refresh">↻ Aggiorna</button>
-          </div>
+          <button class="btn" id="images-refresh">↻ Aggiorna</button>
         </div>
         <div id="images-body"><div class="empty-state"><div class="spinner"></div></div></div>
       </div>
@@ -56,6 +53,37 @@ async function loadDocker() {
           </div>
         </div>
       </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-header">Pulizia risorse</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Immagini dangling</div>
+              <div style="font-size:10px;color:var(--text-dim)">Rimuove le immagini non taggate e non usate da nessun container.</div>
+            </div>
+            <button class="btn btn-red" id="prune-images" style="white-space:nowrap;margin-left:16px">🗑 Prune immagini</button>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Container fermi</div>
+              <div style="font-size:10px;color:var(--text-dim)">Rimuove tutti i container in stato exited o created.</div>
+            </div>
+            <button class="btn btn-red" id="prune-containers" style="white-space:nowrap;margin-left:16px">🗑 Prune container</button>
+          </div>
+
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Reti inutilizzate</div>
+              <div style="font-size:10px;color:var(--text-dim)">Rimuove le reti a cui non è connesso nessun container attivo.</div>
+            </div>
+            <button class="btn btn-red" id="prune-networks" style="white-space:nowrap;margin-left:16px">🗑 Prune reti</button>
+          </div>
+
+        </div>
+      </div>
     </div>
   `;
 
@@ -70,12 +98,30 @@ async function loadDocker() {
 
   document.getElementById('images-refresh').addEventListener('click', renderImages);
   document.getElementById('networks-refresh').addEventListener('click', renderNetworks);
-  document.getElementById('images-prune').addEventListener('click', async () => {
+
+  document.getElementById('prune-images').addEventListener('click', async () => {
     if (!await dlgConfirm('Rimuovere tutte le immagini dangling? L\'operazione è irreversibile.')) return;
     try {
       const result = await POST('/docker/images/prune');
       await renderImages();
       alert(`Pulizia completata. Spazio liberato: ${fmtBytes(result.reclaimed)}`);
+    } catch (err) { alert(`Errore: ${err.message}`); }
+  });
+
+  document.getElementById('prune-containers').addEventListener('click', async () => {
+    if (!await dlgConfirm('Rimuovere tutti i container fermi (exited/created)? L\'operazione è irreversibile.')) return;
+    try {
+      const result = await POST('/docker/containers/prune');
+      alert(`Pulizia completata. ${result.count} container rimossi.`);
+    } catch (err) { alert(`Errore: ${err.message}`); }
+  });
+
+  document.getElementById('prune-networks').addEventListener('click', async () => {
+    if (!await dlgConfirm('Rimuovere tutte le reti inutilizzate? L\'operazione è irreversibile.')) return;
+    try {
+      const result = await POST('/docker/networks/prune');
+      await renderNetworks();
+      alert(`Pulizia completata. ${result.count} reti rimosse.`);
     } catch (err) { alert(`Errore: ${err.message}`); }
   });
 
