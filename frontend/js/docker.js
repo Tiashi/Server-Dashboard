@@ -41,15 +41,15 @@ async function loadDocker() {
         <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
           <div>
             <label style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Directory base</label>
-            <input id="compose-base-dir" type="text" placeholder="~/docker"
-              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="compose-base-dir" type="text" placeholder="~/docker"
+                style="flex:1;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
+              <button class="btn btn-green" id="compose-dir-save" style="padding:8px 20px;white-space:nowrap">✓ Salva</button>
+              <span id="compose-dir-msg" style="font-size:11px"></span>
+            </div>
             <div style="font-size:10px;color:var(--text-dim);margin-top:4px">
               Ogni sottocartella con un docker-compose.yaml sarà rilevata come stack.
             </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn btn-green" id="compose-dir-save" style="padding:8px 20px">✓ Salva</button>
-            <span id="compose-dir-msg" style="font-size:11px"></span>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ async function loadDocker() {
               <div style="font-size:12px;color:#fff;margin-bottom:3px">Immagini dangling</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove le immagini non taggate e non usate da nessun container.</div>
             </div>
-            <button class="btn btn-red" id="prune-images" style="white-space:nowrap;margin-left:16px">🗑 Prune immagini</button>
+            <button class="btn btn-red" id="prune-images" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune immagini</button>
           </div>
 
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
@@ -71,7 +71,7 @@ async function loadDocker() {
               <div style="font-size:12px;color:#fff;margin-bottom:3px">Container fermi</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove tutti i container in stato exited o created.</div>
             </div>
-            <button class="btn btn-red" id="prune-containers" style="white-space:nowrap;margin-left:16px">🗑 Prune container</button>
+            <button class="btn btn-red" id="prune-containers" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune container</button>
           </div>
 
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
@@ -79,7 +79,7 @@ async function loadDocker() {
               <div style="font-size:12px;color:#fff;margin-bottom:3px">Reti inutilizzate</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove le reti a cui non è connesso nessun container attivo.</div>
             </div>
-            <button class="btn btn-red" id="prune-networks" style="white-space:nowrap;margin-left:16px">🗑 Prune reti</button>
+            <button class="btn btn-red" id="prune-networks" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune reti</button>
           </div>
 
         </div>
