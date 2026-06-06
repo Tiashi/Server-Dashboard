@@ -115,6 +115,8 @@ body { display: flex; flex-direction: column; }
   border-radius: var(--radius);
   padding: 0;
   transition: border-color .15s;
+  position: relative;
+  z-index: 300;
 }
 
 #menu-toggle span {

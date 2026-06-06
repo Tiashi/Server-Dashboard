@@ -47,17 +47,6 @@ async function loadFirewall() {
           </div>
         </div>
       </div>
-
-      <div class="panel" style="margin-top:16px;border-color:#7a2020">
-        <div class="panel-header" style="color:var(--red)">Zona pericolosa</div>
-        <div style="padding:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-red" id="fw-reset-btn">⚠ Reset firewall</button>
-          <span style="font-size:11px;color:var(--text-dim)">
-            Azzera tutte le regole e ripristina le policy di default. UFW verrà disattivato.
-          </span>
-        </div>
-      </div>
-
     </div>
 
     <!-- TAB 2: Regole -->
@@ -150,12 +139,21 @@ async function loadFirewall() {
 
   // Salva policy
   document.getElementById('fw-def-save').addEventListener('click', async () => {
-    const defIn  = document.getElementById('fw-def-in').value;
-    const defOut = document.getElementById('fw-def-out').value;
+    const defIn  = document.getElementById('fw-def-in');
+    const defOut = document.getElementById('fw-def-out');
+    const btn    = document.getElementById('fw-def-save');
     const msg    = document.getElementById('fw-def-msg');
+
+    // Lock UI
+    btn.disabled    = true;
+    defIn.disabled  = true;
+    defOut.disabled = true;
+    btn.innerHTML   = '<span class="spinner" style="width:9px;height:9px;border-width:1.5px"></span> Salvataggio...';
+    msg.textContent = '';
+
     try {
-      await POST('/firewall/default', { direction: 'incoming', policy: defIn });
-      await POST('/firewall/default', { direction: 'outgoing', policy: defOut });
+      await POST('/firewall/default', { direction: 'incoming', policy: defIn.value });
+      await POST('/firewall/default', { direction: 'outgoing', policy: defOut.value });
       msg.style.color = 'var(--teal)';
       msg.textContent = '✓ Policy aggiornate';
       setTimeout(() => msg.textContent = '', 2000);
@@ -163,17 +161,11 @@ async function loadFirewall() {
     } catch(e) {
       msg.style.color = 'var(--red)';
       msg.textContent = `✕ ${e.message}`;
-    }
-  });
-
-  // Reset
-  document.getElementById('fw-reset-btn').addEventListener('click', async () => {
-    if (!await dlgConfirm('Eseguire il reset completo di UFW? Tutte le regole verranno eliminate e il firewall verrà disattivato.')) return;
-    try {
-      await POST('/firewall/reset');
-      _fwLoad();
-    } catch(e) {
-      alert(`Errore reset: ${e.message}`);
+    } finally {
+      btn.disabled    = false;
+      defIn.disabled  = false;
+      defOut.disabled = false;
+      btn.textContent = '✓ Salva policy';
     }
   });
 }
@@ -293,11 +285,19 @@ function _fwRenderRules(rules) {
       const action = btn.dataset.action;
       const from   = btn.dataset.from;
       if (!await dlgConfirm(`Eliminare la regola "${action}" per "${to}" da "${from}"?`)) return;
+
+      // Spinner sul bottone della riga
+      const origText = btn.textContent;
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spinner" style="width:9px;height:9px;border-width:1.5px"></span>';
+
       try {
         await api('DELETE', `/firewall/rules?to=${encodeURIComponent(to)}&action=${encodeURIComponent(action)}&from_=${encodeURIComponent(from)}`);
         _fwLoad();
       } catch(e) {
         alert(`Errore: ${e.message}`);
+        btn.disabled  = false;
+        btn.textContent = origText;
       }
     });
   });
