@@ -60,7 +60,7 @@ async function loadDocker() {
 
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
             <div>
-              <div style="font-size:12px;color:#fff;margin-bottom:3px">Immagini dangling</div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Immagini Dangling</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove le immagini non taggate e non usate da nessun container.</div>
             </div>
             <button class="btn btn-red" id="prune-images" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune immagini</button>
@@ -68,7 +68,7 @@ async function loadDocker() {
 
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
             <div>
-              <div style="font-size:12px;color:#fff;margin-bottom:3px">Container fermi</div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Container Fermi</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove tutti i container in stato exited o created.</div>
             </div>
             <button class="btn btn-red" id="prune-containers" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune container</button>
@@ -76,7 +76,7 @@ async function loadDocker() {
 
           <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;justify-content:space-between;align-items:center">
             <div>
-              <div style="font-size:12px;color:#fff;margin-bottom:3px">Reti inutilizzate</div>
+              <div style="font-size:12px;color:#fff;margin-bottom:3px">Reti Inutilizzate</div>
               <div style="font-size:10px;color:var(--text-dim)">Rimuove le reti a cui non è connesso nessun container attivo.</div>
             </div>
             <button class="btn btn-red" id="prune-networks" style="width:160px;white-space:nowrap;margin-left:16px">🗑 Prune reti</button>

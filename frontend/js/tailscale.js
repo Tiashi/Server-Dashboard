@@ -284,7 +284,7 @@ async function _updateSessionUI() {
     try {
       const keys   = await GET('/tailscale/session/keys');
       const prefix = status.prefix.replace('...', '');
-      const match  = keys.find(k => k.prefix === prefix);
+      const match  = keys.find(k => k.prefix.startsWith(prefix) || prefix.startsWith(k.prefix));
       let expiryText = 'Nessuna scadenza';
       let expiryColor = 'var(--text-dim)';
       if (match?.expiration && !match.expiration.startsWith('0001')) {
