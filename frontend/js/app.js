@@ -1,8 +1,9 @@
 // ── Router ──────────────────────────────────────────────────────────────────
 const pages = {
-  shortcuts: { load: loadShortcuts   },
-  docker:    { load: loadDocker      },
+  shortcuts: { load: loadShortcuts                          },
+  docker:    { load: loadDocker                             },
   tailscale: { load: loadTailscale, unload: unloadTailscale },
+  firewall:  { load: loadFirewall                           },
   resources: { load: loadResources, unload: unloadResources },
 };
 
