@@ -105,10 +105,6 @@ async function loadTailscale() {
                   <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">URL</div>
                   <code id="session-url-m" style="font-size:12px;color:var(--amber)"></code>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:8px;min-width:120px">
-                  <button class="btn" id="session-edit-btn" style="width:100%">✏ Modifica</button>
-                  <button class="btn btn-red" id="session-key-forget" style="width:100%">✕ Dimentica</button>
-                </div>
               </div>
               <div style="display:flex;gap:24px;flex-wrap:wrap">
                 <div>
@@ -119,6 +115,10 @@ async function loadTailscale() {
                   <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Scadenza</div>
                   <code id="session-expiry-m" style="font-size:12px"></code>
                 </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;min-width:120px">
+                <button class="btn" id="session-edit-btn" style="width:100%">✏ Modifica</button>
+                <button class="btn btn-red" id="session-key-forget" style="width:100%">✕ Dimentica</button>
               </div>
             </div>
 
