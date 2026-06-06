@@ -76,22 +76,22 @@ async function loadTailscale() {
           <!-- FORM (visibile quando non configurato o in modifica) -->
           <div id="session-form">
             <div id="session-form-msg" style="font-size:11px;margin-bottom:12px;display:none"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-              <div>
-                <label style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">URL Headscale</label>
-                <input id="session-edit-url" type="text" placeholder="https://headscale.example.com" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;min-width:0">
+              <div style="min-width:0">
+                <label style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">URL Headscale</label>
+                <input id="session-edit-url" type="text" placeholder="https://headscale.example.com" style="width:100%;box-sizing:border-box;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
               </div>
-              <div>
-                <label style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">API Key <span style="color:var(--text-dim)">(lascia vuoto per non cambiare)</span></label>
+              <div style="min-width:0">
+                <label style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">API Key <span style="color:var(--text-dim)">(lascia vuoto per non cambiare)</span></label>
                 <div style="display:flex;gap:8px">
-                  <input id="session-edit-key" type="password" placeholder="Inserisci chiave..." style="flex:1;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
+                  <input id="session-edit-key" type="password" placeholder="Inserisci chiave..." style="flex:1;min-width:0;box-sizing:border-box;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px"/>
                   <button class="btn" id="session-key-toggle">👁</button>
                 </div>
               </div>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;width:100%">
-              <button class="btn btn-green" id="session-form-save" style="padding:8px 20px">✓ Salva</button>
-              <button class="btn" id="session-form-cancel" style="display:none">Annulla</button>
+              <button class="btn btn-green" id="session-form-save" style="padding:8px 20px;min-width:100px">✓ Salva</button>
+              <button class="btn" id="session-form-cancel" style="display:none;padding:8px 20px;min-width:100px">Annulla</button>
               <div id="session-form-error" style="font-size:11px;color:var(--red);flex:1"></div>
             </div>
           </div>
