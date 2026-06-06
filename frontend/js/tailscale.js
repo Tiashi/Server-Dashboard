@@ -98,31 +98,32 @@ async function loadTailscale() {
 
           <!-- INFO (visibile quando configurato correttamente) -->
           <div id="session-info" style="display:none">
-            <!-- Mobile: compatto -->
-            <div class="session-info-mobile" style="display:flex;flex-direction:column;gap:10px">
-              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            
+            <!-- Mobile -->
+            <div class="session-info-mobile" style="display:flex;align-items:center;gap:16px">
+              <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:0">
                 <div>
                   <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">URL</div>
-                  <code id="session-url-m" style="font-size:12px;color:var(--amber)"></code>
+                  <code id="session-url-m" style="font-size:12px;color:var(--amber);word-break:break-all"></code>
+                </div>
+                <div style="display:flex;gap:24px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Chiave</div>
+                    <code id="session-key-m" style="font-size:12px;color:var(--teal)"></code>
+                  </div>
+                  <div>
+                    <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Scadenza</div>
+                    <code id="session-expiry-m" style="font-size:12px"></code>
+                  </div>
                 </div>
               </div>
-              <div style="display:flex;gap:24px;flex-wrap:wrap">
-                <div>
-                  <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Chiave</div>
-                  <code id="session-key-m" style="font-size:12px;color:var(--teal)"></code>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Scadenza</div>
-                  <code id="session-expiry-m" style="font-size:12px"></code>
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:8px;min-width:120px">
+              <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;width:120px">
                 <button class="btn" id="session-edit-btn" style="width:100%">✏ Modifica</button>
                 <button class="btn btn-red" id="session-key-forget" style="width:100%">✕ Dimentica</button>
               </div>
             </div>
 
-            <!-- Desktop: espanso -->
+            <!-- Desktop -->
             <div class="session-info-desktop" style="display:none">
               <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:24px;align-items:center">
                 <div>
