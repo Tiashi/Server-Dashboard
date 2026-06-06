@@ -4,21 +4,15 @@ async function loadFirewall() {
     <div class="page-title">Firewall</div>
     <div class="page-subtitle">GESTIONE UFW</div>
 
-    <!-- Tab bar -->
-    <div class="tab-bar" style="display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0">
-      <button class="fw-tab active" data-tab="overview" style="padding:8px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">
-        🛡 Stato & Policy
-      </button>
-      <button class="fw-tab" data-tab="rules" style="padding:8px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">
-        📋 Regole
-      </button>
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="fw-overview">Stato & Policy</button>
+      <button class="tab-btn" data-tab="fw-rules">Regole</button>
     </div>
 
     <!-- TAB 1: Stato & Policy -->
-    <div id="fw-tab-overview">
+    <div id="tab-fw-overview" class="tab-content active">
 
-      <!-- Status -->
-      <div class="panel" style="margin-bottom:16px">
+      <div class="panel" style="margin-top:16px">
         <div class="panel-header">
           <span>Stato firewall</span>
           <div id="fw-status-actions"><div class="spinner"></div></div>
@@ -28,8 +22,7 @@ async function loadFirewall() {
         </div>
       </div>
 
-      <!-- Policy di default -->
-      <div class="panel" style="margin-bottom:16px">
+      <div class="panel" style="margin-top:16px">
         <div class="panel-header">Policy di default</div>
         <div style="padding:16px;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
           <div>
@@ -55,8 +48,7 @@ async function loadFirewall() {
         </div>
       </div>
 
-      <!-- Zona pericolosa -->
-      <div class="panel" style="border-color:#7a2020">
+      <div class="panel" style="margin-top:16px;border-color:#7a2020">
         <div class="panel-header" style="color:var(--red)">Zona pericolosa</div>
         <div style="padding:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-red" id="fw-reset-btn">⚠ Reset firewall</button>
@@ -69,10 +61,9 @@ async function loadFirewall() {
     </div>
 
     <!-- TAB 2: Regole -->
-    <div id="fw-tab-rules" style="display:none">
+    <div id="tab-fw-rules" class="tab-content">
 
-      <!-- Aggiungi regola -->
-      <div class="panel" style="margin-bottom:16px">
+      <div class="panel" style="margin-top:16px">
         <div class="panel-header">Aggiungi regola</div>
         <div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
           <div>
@@ -117,8 +108,7 @@ async function loadFirewall() {
         </div>
       </div>
 
-      <!-- Lista regole -->
-      <div class="panel">
+      <div class="panel" style="margin-top:16px">
         <div class="panel-header">
           <span>Regole attive</span>
           <button class="btn" id="fw-rules-refresh">↻ Aggiorna</button>
@@ -139,19 +129,13 @@ async function loadFirewall() {
     i.style.cssText = 'width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:12px';
   });
 
-  // Tab switching
-  el.querySelectorAll('.fw-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      el.querySelectorAll('.fw-tab').forEach(t => {
-        t.style.borderBottomColor = 'transparent';
-        t.style.color = 'var(--text-dim)';
-      });
-      tab.style.borderBottomColor = 'var(--teal)';
-      tab.style.color = 'var(--teal)';
-
-      const target = tab.dataset.tab;
-      document.getElementById('fw-tab-overview').style.display = target === 'overview' ? '' : 'none';
-      document.getElementById('fw-tab-rules').style.display    = target === 'rules'    ? '' : 'none';
+  // Tab switching — stesso pattern di docker.js
+  el.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      el.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
     });
   });
 
