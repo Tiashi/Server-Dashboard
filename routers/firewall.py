@@ -40,42 +40,49 @@ class DefaultPolicy(BaseModel):
 def _parse_status(raw: str) -> dict:
     enabled = "Status: active" in raw
 
-    default_in  = re.search(r"Default:\s+(\w+)\s+\(incoming\)", raw)
-    default_out = re.search(r"Default:\s+(\w+)\s+\(outgoing\)", raw)
+    default_in  = re.search(r"Default:.*?(\w+)\s+\(incoming\)", raw)
+    default_out = re.search(r"Default:.*?(\w+)\s+\(outgoing\)", raw)
 
     rules = []
-    # Parsing righe della tabella "To / Action / From"
     lines = raw.splitlines()
     in_table = False
+
     for line in lines:
-        if re.match(r"^-{3,}", line):
+        # La riga separatore è "-- ------ ----"
+        if re.match(r"^--\s+-{4,}", line):
             in_table = True
             continue
         if not in_table:
             continue
-        line = line.strip()
-        if not line:
+        line_s = line.strip()
+        if not line_s:
             continue
 
-        # Formato: "To   Action   From"
-        # es: "22/tcp   ALLOW IN    Anywhere"
-        m = re.match(
-            r"^(.+?)\s{2,}(ALLOW IN|ALLOW OUT|ALLOW FWD|ALLOW|DENY IN|DENY OUT|DENY|REJECT IN|REJECT OUT|REJECT)\s{2,}(.+?)(?:\s+#\s*(.+))?$",
-            line
-        )
-        if m:
-            rules.append({
-                "to":      m.group(1).strip(),
-                "action":  m.group(2).strip(),
-                "from":    m.group(3).strip(),
-                "comment": m.group(4).strip() if m.group(4) else "",
-            })
+        # Formato: "To   Action      From"
+        # Colonne allineate a spazi — splittiamo su 2+ spazi
+        parts = re.split(r'\s{2,}', line_s)
+        if len(parts) < 3:
+            continue
+
+        to     = parts[0].strip()
+        action = parts[1].strip()
+        from_  = parts[2].strip()
+
+        # Commento inline (raro in verbose, ma gestiamolo)
+        comment = parts[3].strip() if len(parts) > 3 else ""
+
+        rules.append({
+            "to":      to,
+            "action":  action,
+            "from":    from_,
+            "comment": comment,
+        })
 
     return {
-        "enabled":      enabled,
-        "default_in":   default_in.group(1)  if default_in  else "deny",
-        "default_out":  default_out.group(1) if default_out else "allow",
-        "rules":        rules,
+        "enabled":     enabled,
+        "default_in":  default_in.group(1)  if default_in  else "deny",
+        "default_out": default_out.group(1) if default_out else "allow",
+        "rules":       rules,
     }
 
 
