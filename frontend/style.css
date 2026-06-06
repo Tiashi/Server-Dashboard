@@ -48,6 +48,8 @@ body { display: flex; flex-direction: column; }
   flex: 1;
   overflow: hidden;
   height: 100vh;
+  position: relative;
+  z-index: 200;
 }
 
 #sidebar {
@@ -76,7 +78,7 @@ body { display: flex; flex-direction: column; }
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  z-index: 200;
+  z-index: 300;
 }
 
 #top-bar .top-bar-logo {
@@ -206,6 +208,7 @@ body { display: flex; flex-direction: column; }
     flex-direction: column;
     gap: 6px;
   }
+  .logo { display: none }
 }
 @media (min-width: 1000px) {
   .session-info-mobile  { display: none !important; }
