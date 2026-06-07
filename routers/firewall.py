@@ -48,7 +48,6 @@ def _parse_status(raw: str) -> dict:
     in_table = False
 
     for line in lines:
-        # La riga separatore è "-- ------ ----"
         if re.match(r"^--\s+-{4,}", line):
             in_table = True
             continue
@@ -57,9 +56,6 @@ def _parse_status(raw: str) -> dict:
         line_s = line.strip()
         if not line_s:
             continue
-
-        # Formato: "To   Action      From"
-        # Colonne allineate a spazi — splittiamo su 2+ spazi
         parts = re.split(r'\s{2,}', line_s)
         if len(parts) < 3:
             continue
@@ -75,7 +71,7 @@ def _parse_status(raw: str) -> dict:
             "to":      to,
             "action":  action,
             "from":    from_,
-            "comment": comment,
+            "comment": re.sub(r'^#+\s*', '', comment).strip() if comment else "",
         })
 
     return {
@@ -163,21 +159,18 @@ def add_rule(body: AddRule):
 
 @router.delete("/rules")
 def delete_rule(to: str, action: str, from_: str):
-    """
-    Elimina una regola passando i suoi campi.
-    ufw delete allow from X to Y port Z
-    """
     try:
-        # Ricostruiamo il comando da cancellare basandoci sulla rappresentazione
-        # più semplice: ufw delete <rule-spec>
-        # Usiamo "ufw --force delete" con numero riga dalla status numbered
         raw = _run(["ufw", "status", "numbered"])
         lines = raw.splitlines()
         target_num = None
         for line in lines:
-            m = re.match(r"^\[\s*(\d+)\]\s+(.+?)\s{2,}(.+?)\s{2,}(.+)$", line)
+            m = re.match(r"^\[\s*(\d+)\]\s+(.+?)\s{2,}(.+?)\s{2,}(.+?)(?:\s+#.*)?$", line)
             if m:
-                num, t, a, f = m.group(1), m.group(2).strip(), m.group(3).strip(), m.group(4).strip()
+                num  = m.group(1)
+                t    = m.group(2).strip()
+                a    = m.group(3).strip()
+                f    = m.group(4).strip()
+                f    = re.sub(r'\s+#.*$', '', f).strip()
                 if t == to and a == action and f == from_:
                     target_num = num
                     break
